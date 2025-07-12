@@ -34,11 +34,11 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
    
 
     if (!canvas || !context) {
-      console.log('Canvas or context not available');
+     
       return;
     }
 
-    console.log('Setting up pencil event listeners');
+   
 
       
      const startDrawing = (e) => {

@@ -17,7 +17,7 @@ export default function Diamond({canvasRef, contextRef}) {
           (evt.touches?.[0]?.clientX - rect.left) * (canvas.width / rect.width),
         y:
           (evt.touches?.[0]?.clientY - rect.top) *
-          (canvas.height / rect.height),
+          (canvas.height / rect.height)
       };
     }
 
