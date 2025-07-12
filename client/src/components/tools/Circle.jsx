@@ -28,7 +28,6 @@ export default function Circle({canvasRef, contextRef}) {
     };
   };
 
-0, 0 , canvas.width, canvas.height
 
 
  useEffect(() => {

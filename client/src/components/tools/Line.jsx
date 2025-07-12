@@ -51,9 +51,8 @@ export default function Line({canvasRef, contextRef}) {
 
       context.clearRect(0, 0, canvas.width, canvas.height)
 
-       context.beginPath()
-       context.moveTo(initialPos.x, initialPos.y )
-   
+      context.beginPath()
+      context.moveTo(initialPos.x, initialPos.y )
       context.lineTo(mousePos.x,mousePos.y)
       context.stroke()
     }
