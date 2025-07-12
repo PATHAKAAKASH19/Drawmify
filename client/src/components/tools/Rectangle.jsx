@@ -31,15 +31,12 @@ export default function Rectangle({ canvasRef, contextRef }) {
 
     if (!canvas || !context) return;
 
-    console.log("Setting up pencil event listeners");
-
+   
     const startDrawing = (e) => {
-      console.log("Start drawing");
+  
       const mousePos = getMousePos(canvas, e);
       setInitialPos(mousePos);
-     
       setIsDrawing(true);
-
     };
 
     const draw = (e) => {
@@ -57,9 +54,9 @@ export default function Rectangle({ canvasRef, contextRef }) {
     };
 
     const finishDrawing = () => {
-      console.log("Finish drawing");
+     
       setIsDrawing(false);
-      context.save()
+    
     };
 
     canvas.addEventListener("mousedown", startDrawing);

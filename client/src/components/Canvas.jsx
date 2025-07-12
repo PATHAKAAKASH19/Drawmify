@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Pencil from "./tools/Pencil.jsx"
 import Rectangle from './tools/Rectangle.jsx';
+import Circle from './tools/Circle.jsx';
+import Line from './tools/Line.jsx';
+
+
 
 const Canvas = () => {
   const canvasRef = useRef(null)
@@ -28,7 +32,6 @@ const Canvas = () => {
     console.log("hey")
   }, [])
 
-
   return (
     <div className="relative w-full h-screen flex justify-center items-center ">
       <canvas
@@ -37,7 +40,7 @@ const Canvas = () => {
         ref={canvasRef}
         className="bg-white  border-gray-300  border-2"
       />
-      {canvasSetUp &&(<Rectangle canvasRef={canvasRef} contextRef={contextRef}/>)}
+      {canvasSetUp &&(<Line canvasRef={canvasRef} contextRef={contextRef}/>)}
     </div>
   );
 };

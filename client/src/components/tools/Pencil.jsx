@@ -52,7 +52,7 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
     
     
     const finishDrawing = () => {
-          console.log('Finish drawing');
+        console.log('Finish drawing');
         setIsDrawing(false)
         context.closePath()
     }
