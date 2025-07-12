@@ -99,7 +99,5 @@ export default function Diamond({canvasRef, contextRef}) {
   }, [canvasRef, contextRef, isDrawing, initialPos])
 
 
-  return (
-    <div>Diamond</div>
-  )
+  return null
 }
