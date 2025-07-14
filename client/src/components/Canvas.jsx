@@ -5,6 +5,7 @@ import Circle from './tools/Circle.jsx';
 import Line from './tools/Line.jsx';
 import Diamond from './tools/Diamond.jsx';
 import Arrow from './tools/Arrow.jsx';
+import Text from './tools/Text.jsx';
 
 
 const Canvas = () => {
@@ -41,7 +42,7 @@ const Canvas = () => {
         ref={canvasRef}
         className="bg-white  border-gray-300  border-2"
       />
-      {canvasSetUp &&(<Arrow canvasRef={canvasRef} contextRef={contextRef}/>)}
+      {canvasSetUp &&(<Text canvasRef={canvasRef} contextRef={contextRef}/>)}
     </div>
   );
 };
