@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 
@@ -6,8 +6,8 @@ export default function Text({canvasRef, contextRef}) {
   
   const [text, setText] = useState("")
   const [initialPos, setInitialPos] = useState(null)
-  const [isDrawing, setIsDrawing] = useState(false)
-  const [newPos, setNewPos] = useState(null)
+ const inputRef = useRef(null)
+
 
 
    const getMousePos = (canvas, evt) => {
@@ -31,60 +31,59 @@ export default function Text({canvasRef, contextRef}) {
   
 
 
+
+
+
   useEffect(() =>{
     
     const canvas = canvasRef.current
     const context = contextRef.current
 
-    if(!canvas || !context) return
+    if(!canvas|| !context) return
 
-
-
-    const handleText = (e) => {
-    
+  
+     const handleText = (e) => {
       const mousePos = getMousePos(canvas, e)
-     
       setInitialPos(mousePos)
-    
-      setIsDrawing(true)
-    setText("") 
-        if(isDrawing || initialPos) {
-      
-          context.font = "28px sans-serif";
-          context.fillText(text, initialPos.x, initialPos.y)
-           
-        }
- 
-    
-      
-     
-    
+      setText("")
+      context.font = "24px sans-serif";
+      context.fillText(text, initialPos?.x, initialPos?.y )
     }
-
-
-
-   
-    canvas.addEventListener("click" , handleText)
-    
-
-
-    return () => {
+     
+     
+     
+     canvas.addEventListener("click" , handleText)
+     return () => {
       canvas.removeEventListener("click", handleText)
      
     }
-  }, [canvasRef, contextRef, initialPos, text, isDrawing])
-  
+  }, [canvasRef,text, contextRef,initialPos])
+
+
+
+   useEffect(() => {
+    if (initialPos && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.border-0
+    
+    }
+  }, [initialPos])
   return (
     <>
-    {isDrawing&& <input 
+    {( initialPos !== null)&& 
+    <input 
+    ref={inputRef}
     type='text' 
     value={text} 
     onChange={(e) => {setText(e.target.value)}} 
-    className={`absolute text-2xl px-4`} 
+    className={`absolute text-2xl px-4 font-sans`} 
     style={{
       top: `${initialPos?.y}px`,  
       left: `${initialPos?.x}px`,
       transform: 'translate(-10%, -50%)',
+      border:`0px`,
+      outline:"none",
+      
     }}/>
     }
   </>

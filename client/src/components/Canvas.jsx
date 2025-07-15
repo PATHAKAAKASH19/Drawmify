@@ -22,6 +22,7 @@ const Canvas = () => {
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+  
 
     const context = canvas.getContext("2d")
 
@@ -31,7 +32,7 @@ const Canvas = () => {
     contextRef.current = context
 
     setCanvasSetUp(true)
-    console.log("hey")
+  
   }, [])
 
   return (
@@ -42,7 +43,7 @@ const Canvas = () => {
         ref={canvasRef}
         className="bg-white  border-gray-300  border-2"
       />
-      {canvasSetUp &&(<Text canvasRef={canvasRef} contextRef={contextRef}/>)}
+      {canvasSetUp &&(<Circle  canvasRef={canvasRef} contextRef={contextRef}/>)}
     </div>
   );
 };
