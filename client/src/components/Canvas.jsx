@@ -6,6 +6,7 @@ import Line from './tools/Line.jsx';
 import Diamond from './tools/Diamond.jsx';
 import Arrow from './tools/Arrow.jsx';
 import Text from './tools/Text.jsx';
+import SelectTool from './SelectTool.jsx';
 
 
 const Canvas = () => {
@@ -36,10 +37,9 @@ const Canvas = () => {
   }, [])
 
   return (
-    <div className="relative w-full h-screen flex justify-center items-center ">
+    <div className="relative w-full h-screen flex justify-center items-center">
+      <SelectTool/>
       <canvas
-
-      
         ref={canvasRef}
         className="bg-white  border-gray-300  border-2"
       />
