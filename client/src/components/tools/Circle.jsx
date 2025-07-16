@@ -53,10 +53,12 @@ export default function Circle({canvasRef, contextRef}) {
 
       context.clearRect(0, 0, canvas.width, canvas.height);
       
+      const radiusX = Math.abs(mousePos.x - initialPos.x)/2
+      const radiusY = Math.abs(mousePos.y - initialPos.y)/2
       
     
       context.beginPath()
-      context.arc(initialPos.x, initialPos.y,  mousePos.x - initialPos.x, 0, Math.PI*2)
+      context.ellipse(initialPos.x, initialPos.y,  radiusX,radiusY,(Math.PI/180),0, Math.PI*2)
       context.stroke()
 
    }

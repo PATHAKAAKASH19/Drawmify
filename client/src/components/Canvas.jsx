@@ -21,8 +21,13 @@ const Canvas = () => {
     const canvas = canvasRef.current;
     if(!canvas) return
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+
+    canvas.width = window.innerWidth* window.devicePixelRatio;;
+    
+    canvas.height = window.innerHeight*window.devicePixelRatio;
   
 
     const context = canvas.getContext("2d")
