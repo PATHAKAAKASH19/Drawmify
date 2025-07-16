@@ -34,7 +34,7 @@ export default function SelectTool() {
         }, 
         {
          element:<Circle /> ,
-         name:"elglipse",
+         name:"ellipse",
         },
 
         {
