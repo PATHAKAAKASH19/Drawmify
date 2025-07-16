@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-export default function Circle({canvasRef, contextRef}) {
+export default function Ellipse({canvasRef, contextRef}) {
 
 
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Pencil from "./tools/Pencil.jsx"
 import Rectangle from './tools/Rectangle.jsx';
-import Circle from './tools/Circle.jsx';
+import Ellipse from './tools/Ellipse.jsx';
 import Line from './tools/Line.jsx';
 import Diamond from './tools/Diamond.jsx';
 import Arrow from './tools/Arrow.jsx';
