@@ -1,12 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Pencil from "./tools/Pencil.jsx"
-import Rectangle from './tools/Rectangle.jsx';
-import Ellipse from './tools/Ellipse.jsx';
-import Line from './tools/Line.jsx';
-import Diamond from './tools/Diamond.jsx';
-import Arrow from './tools/Arrow.jsx';
-import Text from './tools/Text.jsx';
+
 import SelectTool from './SelectTool.jsx';
+import GetTool from './GetTool.jsx';
 
 
 const Canvas = () => {
@@ -48,7 +43,7 @@ const Canvas = () => {
         ref={canvasRef}
         className="bg-white  border-gray-300  border-2"
       />
-      {canvasSetUp &&(<Circle  canvasRef={canvasRef} contextRef={contextRef}/>)}
+      {canvasSetUp &&(<GetTool canvasRef={canvasRef} contextRef={contextRef}/>)}
     </div>
   );
 };

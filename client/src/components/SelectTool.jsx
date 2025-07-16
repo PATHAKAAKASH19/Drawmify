@@ -15,7 +15,7 @@ export default function SelectTool() {
         setSelectedTool(name)
   }   
    
-  const toolsArray = [
+  const toolsIconArray = [
         {
           element:<Hand />,
           name:"panning"
@@ -70,7 +70,7 @@ export default function SelectTool() {
         { lock ?<LockKeyhole onClick={() => setLock(false)}  className="size-5"/>:<LockKeyholeOpen onClick={() => setLock(true)}  className="size-5"/>}
       </div>
       {
-        toolsArray.map((tool, i) => {
+        toolsIconArray.map((tool, i) => {
           return (
             <div key={i} className={`px-2.5 py-2.5 rounded-xl hover:cursor-pointer ${selectedTool===tool.name ? `bg-blue-300`:"hover:bg-blue-100"}`} onClick={(e)=>handleToolSelection(tool.name)}>
              {React.cloneElement(tool.element, {className:"size-4"}) }
