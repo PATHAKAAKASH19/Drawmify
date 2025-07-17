@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import getMousePos from "../../utils/getMousePos";
+import createRectangle from "../../utils/createRectangle";
 
 export default function Rectangle({ canvasRef, contextRef }) {
 
@@ -8,15 +9,6 @@ export default function Rectangle({ canvasRef, contextRef }) {
   const [rectangles, setRectangles] = useState([])
 
 
-
-  const createRectangle = (context,mousePos, initialPos) => {
-    const width = mousePos.x - initialPos.x
-      const height = mousePos.y - initialPos.y
-
-      context.beginPath()
-      context.rect(initialPos.x, initialPos.y, width, height);
-      context.stroke()
-  }
 
   useEffect(() => {
     const canvas = canvasRef.current;

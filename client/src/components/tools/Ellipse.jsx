@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
+import createEllipse from '../../utils/createEllipse'
 
 export default function Ellipse({canvasRef, contextRef}) {
  
@@ -8,14 +9,6 @@ export default function Ellipse({canvasRef, contextRef}) {
   const [ellipses, setEllipses] = useState([])
 
 
-  const createEllipse = (context, mousePos, initialPos) => {
-      
-      const radiusX = Math.abs(mousePos.x - initialPos.x)/2
-      const radiusY = Math.abs(mousePos.y - initialPos.y)/2
-      context.beginPath()
-      context.ellipse(initialPos.x, initialPos.y,  radiusX,radiusY,(Math.PI/180),0, Math.PI*2)
-      context.stroke()
-}
 
   useEffect(() => {
 

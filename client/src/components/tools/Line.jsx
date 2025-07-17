@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
+import createLine from '../../utils/createLine'
 
 export default function Line({canvasRef, contextRef}) {
   
@@ -8,12 +9,6 @@ export default function Line({canvasRef, contextRef}) {
   const [lines, setLines] = useState([])
 
 
-  const createLine = (context, mousePos, initialPos) => {
-      context.beginPath()
-      context.moveTo(initialPos.x, initialPos.y )
-      context.lineTo(mousePos.x,mousePos.y)
-      context.stroke()
-  }
 
   useEffect(() => {
     
