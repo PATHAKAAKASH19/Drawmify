@@ -4,15 +4,19 @@ import {
    Diamond,  Image, MousePointer, LockKeyhole, 
     LockKeyholeOpen,  Hand,  Square,  Keyboard
   } from 'lucide-react';
+import useToolStore from '../stores/toolStore';
 
  
 export default function SelectTool() {
 
   const [selectedTool, setSelectedTool] = useState("selector")
   const [lock, setLock] = useState(false)
+  const changeTool = useToolStore((state) => state.changeTool)
   
   const handleToolSelection = (name)=>{
         setSelectedTool(name)
+        
+        changeTool(name)
   }   
    
   const toolsIconArray = [

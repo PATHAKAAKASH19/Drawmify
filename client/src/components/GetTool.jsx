@@ -10,11 +10,12 @@ import Rectangle from './tools/Rectangle'
 import Text from './tools/Text'
 import Panning from './tools/Panning'
 import Selector from './tools/Selector'
+import useToolStore from '../stores/toolStore'
 
 
 export default function GetTool({canvasRef, contextRef}) {
   
-  
+  const selectedTool = useToolStore((state) => state.tool)
 
   const toolsArray = [
         {
@@ -69,7 +70,7 @@ export default function GetTool({canvasRef, contextRef}) {
 
   return (
     <>
-     {React.cloneElement(toolsArray.find((tool) => tool.name === "line").element, {canvasRef, contextRef})}
+     {React.cloneElement(toolsArray.find((tool) => tool.name === selectedTool).element, {canvasRef, contextRef})}
     </>
   )
 }

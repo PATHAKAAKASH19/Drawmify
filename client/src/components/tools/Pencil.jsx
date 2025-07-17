@@ -1,71 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import getMousePos from '../../utils/getMousePos';
 
 export default function Pencil({canvasRef, contextRef,isActive}) {
-
-
-    const [isDrawing, setIsDrawing] = useState(false)
-
-
-     const getMousePos = (canvas, evt) => {
-        const rect = canvas.getBoundingClientRect();
-    
-        if(evt.touches){
-           return {
-            x: (evt.touches?.[0]?.clientX- rect.left) * (canvas.width / rect.width),
-            y:(evt.touches?.[0]?.clientY- rect.top) * (canvas.height / rect.height),
-           }
-        }
-    
-          return {
-          x: (evt.clientX  - rect.left) * (canvas.width / rect.width),
-          y: (evt.clientY - rect.top) * (canvas.height / rect.height)
-        };
-      
-      };
-    
-    useEffect(() => {
-
-
-       
-
+   
+  const [isDrawing, setIsDrawing] = useState(false)
+  
+  useEffect(() => {
+   
     const canvas = canvasRef.current;
     const context = contextRef.current;
  
-   
+    if (!canvas || !context) return;
 
-    if (!canvas || !context) {
-     
-      return;
-    }
-
-   
-
-      
-     const startDrawing = (e) => {
-         console.log('Start drawing');
-   
+    const startDrawing = (e) => {
         const mousePos = getMousePos(canvas, e);
         context.beginPath()
         context.moveTo(mousePos.x, mousePos.y)
         setIsDrawing(true)
     }
     
-    
     const finishDrawing = () => {
-        console.log('Finish drawing');
         setIsDrawing(false)
         context.closePath()
     }
             
-    
     const move = (e) => {
         if(!isDrawing) return
-
-       
+        
         const mousePos = getMousePos(canvas, e);
         context.lineTo(mousePos.x, mousePos.y)
         context.stroke()
-       
     }
 
     canvas.addEventListener("mousedown", startDrawing);
@@ -75,7 +39,6 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
 
     // Cleanup function
     return () => {
-      console.log('Cleaning up pencil event listeners');
       canvas.removeEventListener("mousedown", startDrawing);
       canvas.removeEventListener("mousemove", move);
       canvas.removeEventListener("mouseup", finishDrawing);

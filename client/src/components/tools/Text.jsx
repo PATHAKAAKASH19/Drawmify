@@ -1,37 +1,12 @@
-import React, { useRef } from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
+import { useRef,  useEffect,  useState } from 'react'
+import getMousePos from '../../utils/getMousePos'
+
 
 export default function Text({canvasRef, contextRef}) {
   
   const [text, setText] = useState("")
   const [initialPos, setInitialPos] = useState(null)
- const inputRef = useRef(null)
-
-
-
-   const getMousePos = (canvas, evt) => {
-    const rect = canvas.getBoundingClientRect();
-
-    if (evt.touches) {
-      return {
-        x:
-          (evt.touches?.[0]?.clientX - rect.left) * (canvas.width / rect.width),
-        y:
-          (evt.touches?.[0]?.clientY - rect.top) *
-          (canvas.height / rect.height),
-      };
-    }
-
-    return {
-      x: (evt.clientX - rect.left) * (canvas.width / rect.width),
-      y: (evt.clientY - rect.top) * (canvas.height / rect.height),
-    };
-  };
-  
-
-
-
+  const inputRef = useRef(null)
 
 
   useEffect(() =>{
@@ -64,8 +39,7 @@ export default function Text({canvasRef, contextRef}) {
    useEffect(() => {
     if (initialPos && inputRef.current) {
       inputRef.current.focus()
-      inputRef.current.border-0
-    
+  
     }
   }, [initialPos])
   return (

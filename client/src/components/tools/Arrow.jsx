@@ -1,35 +1,41 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import getMousePos from '../../utils/getMousePos'
 
 export default function Arrow({canvasRef, contextRef}) {
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [initialPos, setInitialPos] = useState(null)
+  const [arrows, setArrows] = useState([])
 
 
-  const getMousePos = (canvas, evt) => {
-    const rect = canvas.getBoundingClientRect();
+  const createArrow = (context, mousePos, initialPos) => {
+        context.beginPath()
+        context.moveTo(initialPos.x, initialPos.y)
+        context.lineTo(mousePos.x, mousePos.y)
+        context.stroke()
 
-    if (evt.touches) {
-      return {
-        x:
-          (evt.touches?.[0]?.clientX - rect.left) * (canvas.width / rect.width),
-        y:
-          (evt.touches?.[0]?.clientY - rect.top) *
-          (canvas.height / rect.height),
-      };
-    }
+        const angle = Math.atan2(mousePos.y - initialPos.y, mousePos.x - initialPos.x);
+        const headLength = 10;
+    
+        context.beginPath();
+        context.moveTo(mousePos.x, mousePos.y);
+        context.lineTo(
+           mousePos.x - headLength * Math.cos(angle - Math.PI / 6),
+           mousePos.y - headLength * Math.sin(angle - Math.PI / 6)
+        );
+        context.lineTo(
+           mousePos.x -headLength * Math.cos(angle + Math.PI / 6),
+           mousePos.y - headLength * Math.sin(angle + Math.PI / 6)
+        );
+        context.closePath()
+        context.stroke()
+  }
 
-    return {
-      x: (evt.clientX - rect.left) * (canvas.width / rect.width),
-      y: (evt.clientY - rect.top) * (canvas.height / rect.height),
-    };
-  };
-  
-  
   useEffect(() => {
 
      const canvas = canvasRef.current
      const context = contextRef.current
+     let arrowObj
 
      if(!canvas || ! context) return
 
@@ -38,56 +44,30 @@ export default function Arrow({canvasRef, contextRef}) {
         setIsDrawing(true)
         const mousePos = getMousePos(canvas, e)
         setInitialPos(mousePos)
-     }
+      }
 
-     const draw = (e) => {
-       
+      const draw = (e) => {
         if(!isDrawing || !initialPos) return
+         
         e.preventDefault()
-         context.clearRect(0, 0, canvas.width, canvas.height);
-
+        context.clearRect(0, 0, canvas.width, canvas.height);
         const mousePos = getMousePos(canvas, e)
 
+        if(arrows.length){
+         arrows.forEach(element => createArrow(context, element.mousePos, element.initialPos));
+        }
         
-
-  
-    
-        context.beginPath()
-        context.moveTo(initialPos.x, initialPos.y)
-        context.lineTo(mousePos.x, mousePos.y)
-
-         context.stroke()
-
-        const angle = Math.atan2(mousePos.y - initialPos.y, mousePos.x - initialPos.x);
-    
-        const headLength = 10;
-    
-  
-        context.beginPath();
-        context.moveTo(mousePos.x, mousePos.y);
-    
-   
-        context.lineTo(
-           mousePos.x - headLength * Math.cos(angle - Math.PI / 6),
-           mousePos.y - headLength * Math.sin(angle - Math.PI / 6)
-        );
-    
-      
-      
-        context.lineTo(
-           mousePos.x -headLength * Math.cos(angle + Math.PI / 6),
-           mousePos.y - headLength * Math.sin(angle + Math.PI / 6)
-        );
-    
-
-        context.closePath()
-        context.stroke()
-
-
+        createArrow(context, mousePos, initialPos)
+        
+        arrowObj = {
+          initialPos,
+          mousePos
+         }
      }
 
      const finishDrawing = (e) =>{
       e.preventDefault()  
+      setArrows(prev=>[...prev, arrowObj])
       setIsDrawing(false)
      }
 
@@ -102,7 +82,7 @@ export default function Arrow({canvasRef, contextRef}) {
      canvas.addEventListener("touchend", finishDrawing)
 
 
-     return () => {
+   return () => {
       // mouse event
       canvas.removeEventListener("mousedown", startDrawing)
       canvas.removeEventListener("mousemove", draw)
@@ -112,9 +92,9 @@ export default function Arrow({canvasRef, contextRef}) {
       canvas.removeEventListener("touchstart", startDrawing)
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
-     }
+   }
 
-  }, [canvasRef, contextRef, isDrawing, initialPos])
+  }, [canvasRef, contextRef, isDrawing, initialPos,arrows])
 
   return null
 }
