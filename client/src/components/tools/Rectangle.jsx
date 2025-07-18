@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import getMousePos from "../../utils/getMousePos";
 import createRectangle from "../../utils/createRectangle";
+import useShapeStore from "../../stores/shapeStore";
+import renderAllShapes from "../../utils/renderAllShapes";
 
 export default function Rectangle({ canvasRef, contextRef }) {
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [initialPos, setInitialPos]  = useState(null) 
   const [rectangles, setRectangles] = useState([])
+
+  const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
+
 
 
 
@@ -36,9 +42,13 @@ export default function Rectangle({ canvasRef, contextRef }) {
       
       if(rectangles.length){
          rectangles.forEach((rectangle) => {
-          createRectangle(context, rectangle.mousePos, rectangle.initialPos)
+          createRectangle(context, rectangle?.mousePos, rectangle?.initialPos)
          })
       }
+
+
+      renderAllShapes(context, shapesData)
+   
       createRectangle(context, mousePos, initialPos)
       rectangleObj = {
         initialPos,
@@ -50,6 +60,7 @@ export default function Rectangle({ canvasRef, contextRef }) {
     const finishDrawing = (e) => {
         e.preventDefault() 
         setRectangles(prev => [...prev, rectangleObj])
+        addShapes({ shapeName:"rectangle",...rectangleObj})
         setIsDrawing(false);
     };
 
@@ -70,7 +81,7 @@ export default function Rectangle({ canvasRef, contextRef }) {
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
     };
-  }, [canvasRef, contextRef, isDrawing, initialPos, rectangles]);
+  }, [canvasRef, contextRef, isDrawing, initialPos, rectangles,addShapes, shapesData]);
 
   return null;
 }

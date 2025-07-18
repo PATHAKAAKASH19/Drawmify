@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
 import createDiamond from '../../utils/createDiamond'
+import useShapeStore from "../../stores/shapeStore";
+import renderAllShapes from "../../utils/renderAllShapes";
 
 export default function Diamond({canvasRef, contextRef}) {
 
@@ -8,6 +10,8 @@ export default function Diamond({canvasRef, contextRef}) {
   const [initialPos, setInitialPos] = useState(null)
   const [diamonds, setDiamonds] = useState([])
 
+  const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
 
 
   useEffect(() => {
@@ -38,6 +42,8 @@ export default function Diamond({canvasRef, contextRef}) {
           createDiamond(context, diamond.mousePos, diamond.initialPos)
         })
       }
+
+      renderAllShapes(context, shapesData)  
       createDiamond(context, mousePos, initialPos)
 
       diamondObj = {
@@ -49,6 +55,7 @@ export default function Diamond({canvasRef, contextRef}) {
     const finishDrawing = (e) => {
       e.preventDefault()  
       setDiamonds(prev => [...prev, diamondObj])
+      addShapes({ shapeName:"diamond",...diamondObj})
       setIsDrawing(false)
     }
 
@@ -71,7 +78,7 @@ export default function Diamond({canvasRef, contextRef}) {
       canvas.removeEventListener("touchend", finishDrawing)
     }
 
-  }, [canvasRef, contextRef, isDrawing, initialPos,diamonds])
+  }, [canvasRef, contextRef, isDrawing, initialPos,diamonds,addShapes,shapesData])
 
 
   return null

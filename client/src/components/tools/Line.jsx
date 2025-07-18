@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
 import createLine from '../../utils/createLine'
+import useShapeStore from "../../stores/shapeStore";
+import renderAllShapes from "../../utils/renderAllShapes";
 
 export default function Line({canvasRef, contextRef}) {
   
@@ -8,6 +10,8 @@ export default function Line({canvasRef, contextRef}) {
   const [initialPos, setInitialPos] = useState(null)
   const [lines, setLines] = useState([])
 
+ const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
 
 
   useEffect(() => {
@@ -38,6 +42,7 @@ export default function Line({canvasRef, contextRef}) {
         })
       }
 
+      renderAllShapes(context, shapesData)
       createLine(context, mousePos, initialPos)
 
       lineObj={
@@ -49,6 +54,7 @@ export default function Line({canvasRef, contextRef}) {
     const finishDrawing = (e) => {
       e.preventDefault()
       setLines(prev => [...prev, lineObj]) 
+      addShapes({ shapeName:"line",...lineObj})
       setIsDrawing(false)
     }
 
@@ -70,7 +76,7 @@ export default function Line({canvasRef, contextRef}) {
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
     }
-  }, [canvasRef, contextRef, isDrawing, initialPos, lines])
+  }, [canvasRef, contextRef, isDrawing, initialPos, lines, addShapes, shapesData])
   
   return null
 }

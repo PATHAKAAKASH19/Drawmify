@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
 import createArrow from '../../utils/createArrow'
+import useShapeStore from "../../stores/shapeStore";
+import renderAllShapes from "../../utils/renderAllShapes";
 
 export default function Arrow({canvasRef, contextRef}) {
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [initialPos, setInitialPos] = useState(null)
   const [arrows, setArrows] = useState([])
+
+
+  const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
 
 
 
@@ -35,7 +41,9 @@ export default function Arrow({canvasRef, contextRef}) {
         if(arrows.length){
          arrows.forEach(element => createArrow(context, element.mousePos, element.initialPos));
         }
-        
+
+
+        renderAllShapes(context, shapesData)  
         createArrow(context, mousePos, initialPos)
         
         arrowObj = {
@@ -47,6 +55,7 @@ export default function Arrow({canvasRef, contextRef}) {
      const finishDrawing = (e) =>{
       e.preventDefault()  
       setArrows(prev=>[...prev, arrowObj])
+      addShapes({ shapeName:"arrow",...arrowObj})
       setIsDrawing(false)
      }
 
@@ -73,7 +82,7 @@ export default function Arrow({canvasRef, contextRef}) {
       canvas.removeEventListener("touchend", finishDrawing)
    }
 
-  }, [canvasRef, contextRef, isDrawing, initialPos,arrows])
+  }, [canvasRef, contextRef, isDrawing, initialPos,arrows, addShapes,shapesData])
 
   return null
 }

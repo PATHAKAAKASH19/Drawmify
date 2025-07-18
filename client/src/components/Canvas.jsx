@@ -7,6 +7,7 @@ const Canvas = () => {
   const canvasRef = useRef(null)
   const contextRef = useRef(null)
   const [canvasSetUp, setCanvasSetUp] = useState(false)
+  
 
 
 
@@ -35,8 +36,9 @@ const Canvas = () => {
   
   }, [])
 
+
   return (
-    <div className="relative w-full h-screen flex justify-center items-center">
+    <div className="relative h-screen flex justify-center items-center">
       <SelectTool/>
       <canvas
         ref={canvasRef}

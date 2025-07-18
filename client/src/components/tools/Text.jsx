@@ -1,5 +1,9 @@
 import { useRef,  useEffect,  useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
+import useShapeStore from "../../stores/shapeStore";
+
+
+
 
 
 export default function Text({canvasRef, contextRef}) {
@@ -9,20 +13,41 @@ export default function Text({canvasRef, contextRef}) {
   const inputRef = useRef(null)
 
 
+  const addShapes = useShapeStore((state) => state.addShapes)
+
+
+  
+
+ const handleTextComplete = (context) =>{
+
+      if(!context) return
+      context.textBaseline = "middle";
+      context.font = "26px sans-serif";
+      context.fillText(text, initialPos?.x, initialPos?.y )
+      if(text){
+      addShapes({shapeName:"text", initialPos, text})
+      }
+
+              
+
+ }
+
   useEffect(() =>{
     
     const canvas = canvasRef.current
-    const context = contextRef.current
+   const context = contextRef.current
 
-    if(!canvas|| !context) return
+    if(!canvas || ! context) return
 
   
      const handleText = (e) => {
       const mousePos = getMousePos(canvas, e)
       setInitialPos(mousePos)
       setText("")
-      context.font = "24px sans-serif";
-      context.fillText(text, initialPos?.x, initialPos?.y )
+
+      console.log(initialPos)
+     
+     
     }
      
      
@@ -32,15 +57,15 @@ export default function Text({canvasRef, contextRef}) {
       canvas.removeEventListener("click", handleText)
      
     }
-  }, [canvasRef,text, contextRef,initialPos])
+  }, [canvasRef,text, contextRef,initialPos, addShapes])
 
 
 
    useEffect(() => {
     if (initialPos && inputRef.current) {
       inputRef.current.focus()
-  
-    }
+      
+}
   }, [initialPos])
   return (
     <>
@@ -50,11 +75,12 @@ export default function Text({canvasRef, contextRef}) {
     type='text' 
     value={text} 
     onChange={(e) => {setText(e.target.value)}} 
+    onBlur={() => handleTextComplete(contextRef.current)}
     className={`absolute text-2xl px-4 font-sans`} 
     style={{
       top: `${initialPos?.y}px`,  
       left: `${initialPos?.x}px`,
-      transform: 'translate(-10%, -50%)',
+ 
       border:`0px`,
       outline:"none",
       

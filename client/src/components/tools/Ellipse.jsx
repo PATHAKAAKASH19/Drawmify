@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
 import createEllipse from '../../utils/createEllipse'
+import useShapeStore from "../../stores/shapeStore";
+import renderAllShapes from "../../utils/renderAllShapes";
 
 export default function Ellipse({canvasRef, contextRef}) {
  
   const [isDrawing, setIsDrawing] =  useState(false)
   const [initialPos, setInitialPos] = useState(null)
   const [ellipses, setEllipses] = useState([])
+
+  const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
 
 
 
@@ -35,9 +40,10 @@ export default function Ellipse({canvasRef, contextRef}) {
       
       if(ellipses.length){
        ellipses.forEach((ellipse) => {
-          createEllipse(context, ellipse.mousePos,ellipse.initialPos)
+          createEllipse(context, ellipse?.mousePos,ellipse?.initialPos)
        })}
     
+     renderAllShapes(context, shapesData)  
      createEllipse(context, mousePos, initialPos)
      
      ellipseObj = {
@@ -49,6 +55,7 @@ export default function Ellipse({canvasRef, contextRef}) {
    const finishDrawing = (e) => {
       e.preventDefault() 
       setEllipses((prev) =>[...prev,ellipseObj])
+      addShapes({ shapeName:"ellipse",...ellipseObj})
       setIsDrawing(false)
    }
 
@@ -70,7 +77,7 @@ export default function Ellipse({canvasRef, contextRef}) {
     canvas.removeEventListener("touchend", finishDrawing)
   }
 
- }, [canvasRef, contextRef, isDrawing, initialPos,ellipses])
+ }, [canvasRef, contextRef, isDrawing, initialPos,ellipses, addShapes, shapesData])
 
   return null
 }
