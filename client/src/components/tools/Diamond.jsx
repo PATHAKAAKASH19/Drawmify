@@ -3,6 +3,7 @@ import getMousePos from '../../utils/getMousePos'
 import createDiamond from '../../utils/createDiamond'
 import useShapeStore from "../../stores/shapeStore";
 import renderAllShapes from "../../utils/renderAllShapes";
+import panning from '../../utils/panning';
 
 export default function Diamond({canvasRef, contextRef}) {
 
@@ -37,14 +38,20 @@ export default function Diamond({canvasRef, contextRef}) {
       const mousePos = getMousePos(canvas, e)
       context.clearRect(0, 0, canvas.width, canvas.height);
       
+      
       if(diamonds.length){
         diamonds.forEach((diamond) => {
-          createDiamond(context, diamond.mousePos, diamond.initialPos)
+          createDiamond(context, diamond?.mousePos, diamond?.initialPos)
         })
+
+
+
       }
 
-      renderAllShapes(context, shapesData)  
+      renderAllShapes(context, shapesData)
+     
       createDiamond(context, mousePos, initialPos)
+    
 
       diamondObj = {
         initialPos,

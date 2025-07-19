@@ -5,6 +5,7 @@ import createDiamond from "./createDiamond";
 import createLine from "./createLine";
 import createEllipse from "./createEllipse"
 import createText from "./createText";
+import panning from "./panning";
 
 
 const renderAllShapes = (context,shapesData) => {
@@ -36,6 +37,7 @@ const renderAllShapes = (context,shapesData) => {
         case "text":
             createText(context, shape.initialPos, shape.text);
             break;
+      
 
       }
     });
