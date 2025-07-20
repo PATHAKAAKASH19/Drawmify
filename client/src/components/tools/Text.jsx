@@ -1,6 +1,8 @@
 import { useRef,  useEffect,  useState } from 'react'
 import getMousePos from '../../utils/getMousePos'
 import useShapeStore from "../../stores/shapeStore";
+import usePanningStore from '../../stores/panningStore';
+import renderAllShapes from '../../utils/renderAllShapes';
 
 
 
@@ -9,78 +11,79 @@ import useShapeStore from "../../stores/shapeStore";
 export default function Text({canvasRef, contextRef}) {
   
   const [text, setText] = useState("")
-  const [initialPos, setInitialPos] = useState(null)
+  const [pos, setPos] = useState(null)
   const inputRef = useRef(null)
 
 
   const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
+  const  offset  = usePanningStore((state) =>  state.offset)
 
-
-  
-
- const handleTextComplete = (context) =>{
+  const handleTextComplete = (context, canvas) =>{
 
       if(!context) return
-      context.textBaseline = "middle";
-      context.font = "26px sans-serif";
-      context.fillText(text, initialPos?.x, initialPos?.y )
-      if(text){
+      
+      context.font = "25px sans-serif";
+       context.textBaseline = "middle";
+      context.clearRect(0, 0, canvas.width, canvas.height)
+       context.save();
+      context.translate(offset?.x, offset?.y); 
+      renderAllShapes(context, shapesData)
+      context.restore();
+      context.fillText(text, pos?.x+14.98, pos?.y+21.9 )
+      if(text && offset){
+        const initialPos = {
+          x : pos?.x - offset?.x+14.98,
+          y : pos?.y - offset?.y+22,
+        }
       addShapes({shapeName:"text", initialPos, text})
       }
-
-              
-
  }
 
-  useEffect(() =>{
+
+ useEffect(() =>{
     
     const canvas = canvasRef.current
-   const context = contextRef.current
+    const context = contextRef.current
 
     if(!canvas || ! context) return
 
-  
-     const handleText = (e) => {
+      const handleText = (e) => {
+      console.log(e)
       const mousePos = getMousePos(canvas, e)
-      setInitialPos(mousePos)
+      setPos(mousePos)
       setText("")
-
-      console.log(initialPos)
-     
-     
     }
-     
-     
      
      canvas.addEventListener("click" , handleText)
      return () => {
       canvas.removeEventListener("click", handleText)
      
     }
-  }, [canvasRef,text, contextRef,initialPos, addShapes])
+  }, [canvasRef,text, contextRef,offset,pos, addShapes])
 
 
 
    useEffect(() => {
-    if (initialPos && inputRef.current) {
+    if (pos && inputRef.current) {
       inputRef.current.focus()
       
 }
-  }, [initialPos])
+  }, [pos])
   return (
     <>
-    {( initialPos !== null)&& 
+    {( pos !== null)&& 
     <input 
     ref={inputRef}
     type='text' 
     value={text} 
     onChange={(e) => {setText(e.target.value)}} 
-    onBlur={() => handleTextComplete(contextRef.current)}
-    className={`absolute text-2xl px-4 font-sans`} 
+    onBlur={() => handleTextComplete(contextRef.current, canvasRef.current)}
+    className={`absolute text-[26.6px] px-4 font-sans`} 
     style={{
-      top: `${initialPos?.y}px`,  
-      left: `${initialPos?.x}px`,
- 
+      top: `${pos?.y}px`,  
+      left: `${pos?.x}px`,
+      right:"0px",
       border:`0px`,
       outline:"none",
       

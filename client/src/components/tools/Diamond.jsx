@@ -3,16 +3,21 @@ import getMousePos from '../../utils/getMousePos'
 import createDiamond from '../../utils/createDiamond'
 import useShapeStore from "../../stores/shapeStore";
 import renderAllShapes from "../../utils/renderAllShapes";
-import panning from '../../utils/panning';
+import usePanningStore from '../../stores/panningStore';
+
 
 export default function Diamond({canvasRef, contextRef}) {
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [initialPos, setInitialPos] = useState(null)
-  const [diamonds, setDiamonds] = useState([])
+
 
   const addShapes = useShapeStore((state) => state.addShapes)
   const shapesData = useShapeStore((state) => state.shapesData)
+  const  offset  = usePanningStore((state) =>  state.offset)
+
+
+
 
 
   useEffect(() => {
@@ -37,31 +42,35 @@ export default function Diamond({canvasRef, contextRef}) {
 
       const mousePos = getMousePos(canvas, e)
       context.clearRect(0, 0, canvas.width, canvas.height);
-      
-      
-      if(diamonds.length){
-        diamonds.forEach((diamond) => {
-          createDiamond(context, diamond?.mousePos, diamond?.initialPos)
-        })
-
-
-
-      }
-
+    
+      context.save();
+      context.translate(offset?.x, offset?.y); 
       renderAllShapes(context, shapesData)
-     
+      context.restore();
       createDiamond(context, mousePos, initialPos)
     
+       if(offset){
 
       diamondObj = {
-        initialPos,
-        mousePos
-    }}
+        initialPos:{
+          x:initialPos.x - offset.x,
+          y:initialPos.y - offset.y
+        },
+        mousePos:{
+          x:mousePos.x - offset.x,
+          y:mousePos.y - offset.y
+        }
+      }}else{
+        diamondObj = {
+          initialPos,
+          mousePos
+        }
+       }
+    }
 
 
     const finishDrawing = (e) => {
       e.preventDefault()  
-      setDiamonds(prev => [...prev, diamondObj])
       addShapes({ shapeName:"diamond",...diamondObj})
       setIsDrawing(false)
     }
@@ -85,7 +94,7 @@ export default function Diamond({canvasRef, contextRef}) {
       canvas.removeEventListener("touchend", finishDrawing)
     }
 
-  }, [canvasRef, contextRef, isDrawing, initialPos,diamonds,addShapes,shapesData])
+  }, [canvasRef, contextRef, isDrawing, initialPos,offset,addShapes,shapesData])
 
 
   return null

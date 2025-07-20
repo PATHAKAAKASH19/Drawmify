@@ -3,15 +3,17 @@ import getMousePos from '../../utils/getMousePos'
 import createLine from '../../utils/createLine'
 import useShapeStore from "../../stores/shapeStore";
 import renderAllShapes from "../../utils/renderAllShapes";
+import usePanningStore from '../../stores/panningStore';
 
 export default function Line({canvasRef, contextRef}) {
   
   const [isDrawing, setIsDrawing] = useState(false)
   const [initialPos, setInitialPos] = useState(null)
-  const [lines, setLines] = useState([])
+ 
 
- const addShapes = useShapeStore((state) => state.addShapes)
-  const shapesData = useShapeStore((state) => state.shapesData)
+   const addShapes = useShapeStore((state) => state.addShapes)
+   const shapesData = useShapeStore((state) => state.shapesData)
+   const  offset  = usePanningStore((state) =>  state.offset)
 
 
   useEffect(() => {
@@ -36,24 +38,38 @@ export default function Line({canvasRef, contextRef}) {
       const mousePos = getMousePos(canvas, e)
       context.clearRect(0, 0, canvas.width, canvas.height)
 
-      if(lines.length){
-        lines.forEach((line) => {
-            createLine(context, line.mousePos, line.initialPos)    
-        })
-      }
 
+      context.save();
+      context.translate(offset?.x, offset?.y); 
       renderAllShapes(context, shapesData)
+      context.restore();
       createLine(context, mousePos, initialPos)
 
-      lineObj={
-        initialPos,
-        mousePos
-      }
+
+
+       if(offset){
+
+        lineObj = {
+        initialPos:{
+          x:initialPos?.x - offset?.x,
+          y:initialPos?.y - offset?.y
+        },
+        mousePos:{
+          x:mousePos?.x - offset?.x,
+          y:mousePos?.y - offset?.y
+        }}
+       }else{
+         lineObj = {
+          initialPos,
+          mousePos
+         }
+       }
+   
     }
 
     const finishDrawing = (e) => {
       e.preventDefault()
-      setLines(prev => [...prev, lineObj]) 
+    
       addShapes({ shapeName:"line",...lineObj})
       setIsDrawing(false)
     }
@@ -76,7 +92,7 @@ export default function Line({canvasRef, contextRef}) {
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
     }
-  }, [canvasRef, contextRef, isDrawing, initialPos, lines, addShapes, shapesData])
+  }, [canvasRef, contextRef, isDrawing, initialPos,offset ,addShapes, shapesData])
   
   return null
 }

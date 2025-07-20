@@ -3,15 +3,17 @@ import getMousePos from '../../utils/getMousePos'
 import createEllipse from '../../utils/createEllipse'
 import useShapeStore from "../../stores/shapeStore";
 import renderAllShapes from "../../utils/renderAllShapes";
+import usePanningStore from '../../stores/panningStore';
 
 export default function Ellipse({canvasRef, contextRef}) {
  
   const [isDrawing, setIsDrawing] =  useState(false)
   const [initialPos, setInitialPos] = useState(null)
-  const [ellipses, setEllipses] = useState([])
+  
 
   const addShapes = useShapeStore((state) => state.addShapes)
   const shapesData = useShapeStore((state) => state.shapesData)
+  const  offset  = usePanningStore((state) =>  state.offset)
 
 
 
@@ -38,23 +40,35 @@ export default function Ellipse({canvasRef, contextRef}) {
       const mousePos = getMousePos(canvas, e)
       context.clearRect(0, 0, canvas.width, canvas.height);
       
-      if(ellipses.length){
-       ellipses.forEach((ellipse) => {
-          createEllipse(context, ellipse?.mousePos,ellipse?.initialPos)
-       })}
-    
-     renderAllShapes(context, shapesData)  
-     createEllipse(context, mousePos, initialPos)
+  
+      context.save();
+      context.translate(offset?.x, offset?.y); 
+      renderAllShapes(context, shapesData)
+      context.restore();
+      createEllipse(context, mousePos, initialPos)
      
-     ellipseObj = {
-        initialPos,
-        mousePos
-      }
+        if(offset){
+
+        ellipseObj = {
+        initialPos:{
+          x:initialPos?.x - offset?.x,
+          y:initialPos?.y - offset?.y
+        },
+        mousePos:{
+          x:mousePos?.x - offset?.x,
+          y:mousePos?.y - offset?.y
+        }}
+       }else{
+         ellipseObj = {
+          initialPos,
+          mousePos
+         }
+       }
+   
     }
 
    const finishDrawing = (e) => {
       e.preventDefault() 
-      setEllipses((prev) =>[...prev,ellipseObj])
       addShapes({ shapeName:"ellipse",...ellipseObj})
       setIsDrawing(false)
    }
@@ -77,7 +91,7 @@ export default function Ellipse({canvasRef, contextRef}) {
     canvas.removeEventListener("touchend", finishDrawing)
   }
 
- }, [canvasRef, contextRef, isDrawing, initialPos,ellipses, addShapes, shapesData])
+ }, [canvasRef, contextRef, isDrawing, offset, initialPos, addShapes, shapesData])
 
   return null
 }

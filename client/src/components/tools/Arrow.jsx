@@ -3,16 +3,18 @@ import getMousePos from '../../utils/getMousePos'
 import createArrow from '../../utils/createArrow'
 import useShapeStore from "../../stores/shapeStore";
 import renderAllShapes from "../../utils/renderAllShapes";
+import usePanningStore from '../../stores/panningStore';
 
 export default function Arrow({canvasRef, contextRef}) {
 
   const [isDrawing, setIsDrawing] = useState(false)
   const [initialPos, setInitialPos] = useState(null)
-  const [arrows, setArrows] = useState([])
+
 
 
   const addShapes = useShapeStore((state) => state.addShapes)
   const shapesData = useShapeStore((state) => state.shapesData)
+  const  offset  = usePanningStore((state) =>  state.offset)
 
 
 
@@ -38,25 +40,35 @@ export default function Arrow({canvasRef, contextRef}) {
         context.clearRect(0, 0, canvas.width, canvas.height);
         const mousePos = getMousePos(canvas, e)
 
-        if(arrows.length){
-         arrows.forEach(element => createArrow(context, element.mousePos, element.initialPos));
-        }
-
-
-        renderAllShapes(context, shapesData)  
+        context.save();
+        context.translate(offset?.x, offset?.y); 
+        renderAllShapes(context, shapesData)
+        context.restore();
         createArrow(context, mousePos, initialPos)
         
+       if(offset){
+
         arrowObj = {
+        initialPos:{
+          x:initialPos?.x - offset?.x,
+          y:initialPos?.y - offset?.y
+        },
+        mousePos:{
+          x:mousePos?.x - offset?.x,
+          y:mousePos?.y - offset?.y
+        }}
+       }else{
+         arrowObj = {
           initialPos,
           mousePos
          }
+       }
      }
 
      const finishDrawing = (e) =>{
-      e.preventDefault()  
-      setArrows(prev=>[...prev, arrowObj])
-      addShapes({ shapeName:"arrow",...arrowObj})
-      setIsDrawing(false)
+       e.preventDefault()  
+       addShapes({ shapeName:"arrow",...arrowObj})
+       setIsDrawing(false)
      }
 
      // handle mouse event
@@ -82,7 +94,7 @@ export default function Arrow({canvasRef, contextRef}) {
       canvas.removeEventListener("touchend", finishDrawing)
    }
 
-  }, [canvasRef, contextRef, isDrawing, initialPos,arrows, addShapes,shapesData])
+  }, [canvasRef, contextRef, isDrawing, initialPos,offset, addShapes,shapesData])
 
   return null
 }

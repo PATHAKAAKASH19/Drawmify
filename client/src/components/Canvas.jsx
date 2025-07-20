@@ -7,8 +7,6 @@ const Canvas = () => {
   const canvasRef = useRef(null)
   const contextRef = useRef(null)
   const [canvasSetUp, setCanvasSetUp] = useState(false)
-  
-
 
 
   useEffect(() => {
@@ -17,10 +15,10 @@ const Canvas = () => {
     if(!canvas) return
 
 
-    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.width = `${window.innerWidth}px `;
     canvas.style.height = `${window.innerHeight}px`;
 
-    canvas.width = window.innerWidth* window.devicePixelRatio;;
+    canvas.width = window.innerWidth* window.devicePixelRatio;
     
     canvas.height = window.innerHeight*window.devicePixelRatio;
   

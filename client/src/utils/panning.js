@@ -4,7 +4,7 @@ const panning = (context, mousePos, initialPos) => {
         const offsetY = mousePos?.y - initialPos?.y
         context.save();
         context.translate(offsetX, offsetY); 
-        renderAllShapes(context, shapesData);
+     
         context.restore();
 
 }

@@ -3,16 +3,17 @@ import getMousePos from "../../utils/getMousePos";
 import createRectangle from "../../utils/createRectangle";
 import useShapeStore from "../../stores/shapeStore";
 import renderAllShapes from "../../utils/renderAllShapes";
+import usePanningStore from "../../stores/panningStore";
 
 export default function Rectangle({ canvasRef, contextRef }) {
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [initialPos, setInitialPos]  = useState(null) 
-  const [rectangles, setRectangles] = useState([])
+
 
   const addShapes = useShapeStore((state) => state.addShapes)
   const shapesData = useShapeStore((state) => state.shapesData)
-
+  const  offset  = usePanningStore((state) =>  state.offset)
 
 
 
@@ -38,28 +39,36 @@ export default function Rectangle({ canvasRef, contextRef }) {
 
       const mousePos = getMousePos(canvas, e);
       context.clearRect(0, 0 , canvas.width, canvas.height)
-    
       
-      if(rectangles.length){
-         rectangles.forEach((rectangle) => {
-          createRectangle(context, rectangle?.mousePos, rectangle?.initialPos)
-         })
-      }
-
-
+      context.save();
+      context.translate(offset?.x, offset?.y); 
       renderAllShapes(context, shapesData)
-   
+      context.restore();
       createRectangle(context, mousePos, initialPos)
-      rectangleObj = {
-        initialPos,
-        mousePos
-      }
+      
+        if(offset){
+
+        rectangleObj = {
+        initialPos:{
+          x:initialPos?.x - offset?.x,
+          y:initialPos?.y - offset?.y
+        },
+        mousePos:{
+          x:mousePos?.x - offset?.x,
+          y:mousePos?.y - offset?.y
+        }}
+       }else{
+         rectangleObj = {
+          initialPos,
+          mousePos
+         }
+       }
 
     };
 
     const finishDrawing = (e) => {
         e.preventDefault() 
-        setRectangles(prev => [...prev, rectangleObj])
+    
         addShapes({ shapeName:"rectangle",...rectangleObj})
         setIsDrawing(false);
     };
@@ -81,7 +90,7 @@ export default function Rectangle({ canvasRef, contextRef }) {
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
     };
-  }, [canvasRef, contextRef, isDrawing, initialPos, rectangles,addShapes, shapesData]);
+  }, [canvasRef, contextRef, isDrawing, offset,initialPos,addShapes, shapesData]);
 
   return null;
 }

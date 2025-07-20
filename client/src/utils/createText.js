@@ -3,7 +3,7 @@
 
 const createText = (context, initialPos, text) => {
     
-    context.font = "24px sans-serif";
+    context.font = "semi-bold 25px sans-serif";
     context.fillText( text, initialPos?.x, initialPos?.y )
 }
 
