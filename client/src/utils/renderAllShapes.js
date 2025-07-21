@@ -5,7 +5,8 @@ import createDiamond from "./createDiamond";
 import createLine from "./createLine";
 import createEllipse from "./createEllipse"
 import createText from "./createText";
-import panning from "./panning";
+import createImage from "./createImage";
+
 
 
 const renderAllShapes = (context,shapesData) => {
@@ -37,7 +38,9 @@ const renderAllShapes = (context,shapesData) => {
         case "text":
             createText(context, shape.initialPos, shape.text);
             break;
-      
+        case "image":
+            createImage(context, shape.img , shape.initialPos, shape.mousePos)
+           break; 
 
       }
     });

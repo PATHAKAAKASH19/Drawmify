@@ -3,7 +3,7 @@ import Arrow from './tools/Arrow'
 import Diamond from './tools/Diamond'
 import Ellipse from './tools/Ellipse'
 import Eraser from './tools/Eraser'
-import Image from './tools/Image'
+import AddImage from './tools/AddImage'
 import Line from './tools/Line'
 import Pencil from './tools/Pencil'
 import Rectangle from './tools/Rectangle'
@@ -52,7 +52,7 @@ export default function GetTool({canvasRef, contextRef}) {
          name:"pencil",
         },
         {
-         element:<Image/>,
+         element:<AddImage/>,
          name:"image",
         },
 

@@ -45,7 +45,7 @@ export default function Arrow({canvasRef, contextRef}) {
         renderAllShapes(context, shapesData)
         context.restore();
         createArrow(context, mousePos, initialPos)
-        
+      
        if(offset){
 
         arrowObj = {

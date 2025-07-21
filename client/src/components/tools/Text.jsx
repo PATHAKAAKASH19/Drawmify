@@ -24,9 +24,9 @@ export default function Text({canvasRef, contextRef}) {
       if(!context) return
       
       context.font = "25px sans-serif";
-       context.textBaseline = "middle";
+      context.textBaseline = "middle";
       context.clearRect(0, 0, canvas.width, canvas.height)
-       context.save();
+      context.save();
       context.translate(offset?.x, offset?.y); 
       renderAllShapes(context, shapesData)
       context.restore();
