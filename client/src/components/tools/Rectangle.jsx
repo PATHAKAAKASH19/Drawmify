@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import getMousePos from "../../utils/getMousePos";
-import createRectangle from "../../utils/createRectangle";
+import getMousePos from "../../utils/getMousePos.utils";
+import {createRectangle} from "../../utils/rectangle.utils";
 import useShapeStore from "../../stores/shapeStore";
-import renderAllShapes from "../../utils/renderAllShapes";
+import renderAllShapes from "../../utils/renderAllShapes.utils";
 import usePanningStore from "../../stores/panningStore";
 
 export default function Rectangle({ canvasRef, contextRef }) {
@@ -42,6 +42,7 @@ export default function Rectangle({ canvasRef, contextRef }) {
       
       context.save();
       context.translate(offset?.x, offset?.y); 
+      
       renderAllShapes(context, shapesData)
       context.restore();
       createRectangle(context, mousePos, initialPos)

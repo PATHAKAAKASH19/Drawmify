@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import getMousePos from '../../utils/getMousePos';
+import getMousePos from '../../utils/getMousePos.utils';
 
 export default function Pencil({canvasRef, contextRef,isActive}) {
    

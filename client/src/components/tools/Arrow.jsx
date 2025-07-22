@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import getMousePos from '../../utils/getMousePos'
-import createArrow from '../../utils/createArrow'
+import getMousePos from '../../utils/getMousePos.utils'
+import {createArrow} from '../../utils/arrow.utils'
 import useShapeStore from "../../stores/shapeStore";
-import renderAllShapes from "../../utils/renderAllShapes";
+import renderAllShapes from "../../utils/renderAllShapes.utils";
 import usePanningStore from '../../stores/panningStore';
 
 export default function Arrow({canvasRef, contextRef}) {

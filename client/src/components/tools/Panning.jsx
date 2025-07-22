@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import getMousePos from '../../utils/getMousePos'
-import renderAllShapes from '../../utils/renderAllShapes'
+import getMousePos from '../../utils/getMousePos.utils'
+import renderAllShapes from '../../utils/renderAllShapes.utils'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
 
@@ -15,20 +15,6 @@ export default function Panning({canvasRef, contextRef}) {
   const  offset  = usePanningStore((state) =>  state.offset)
 
 
-  useEffect(() => {
-
-     
-    const canvas = canvasRef.current
-      const context = contextRef.current
-
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.save();
-      context.translate(offset?.x, offset?.y); 
-      renderAllShapes(context, shapesData);
-      context.restore();
-   
-      
-  })
 
 
 
@@ -36,7 +22,7 @@ export default function Panning({canvasRef, contextRef}) {
 
     const canvas = canvasRef.current
     const context = contextRef.current
-    let offsetObj 
+    let offsetObj = null
 
    
     if(!canvas || !context) return
@@ -77,8 +63,10 @@ export default function Panning({canvasRef, contextRef}) {
     const endPanning = (e) => {
        e.preventDefault()  
        setIsPanning(false)
+     
+       if(offsetObj !==null){
        addOffset({x:offsetObj?.x,y:offsetObj?.y })
-    
+       }
     }
 
 

@@ -11,4 +11,4 @@ const createImage = (context, img , initialPos,mousePos) => {
 }
 
 
-export default createImage
+export {createImage}

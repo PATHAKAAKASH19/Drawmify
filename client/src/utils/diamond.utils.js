@@ -11,4 +11,4 @@
       context.stroke()
   }
 
-  export default createDiamond
+  export  {createDiamond}

@@ -1,11 +1,8 @@
 import { useRef,  useEffect,  useState } from 'react'
-import getMousePos from '../../utils/getMousePos'
+import getMousePos from '../../utils/getMousePos.utils'
 import useShapeStore from "../../stores/shapeStore";
 import usePanningStore from '../../stores/panningStore';
-import renderAllShapes from '../../utils/renderAllShapes';
-
-
-
+import renderAllShapes from '../../utils/renderAllShapes.utils';
 
 
 export default function Text({canvasRef, contextRef}) {

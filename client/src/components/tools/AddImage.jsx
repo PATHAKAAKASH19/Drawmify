@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import getMousePos from '../../utils/getMousePos'
+import getMousePos from '../../utils/getMousePos.utils'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
-import renderAllShapes from '../../utils/renderAllShapes'
+import renderAllShapes from '../../utils/renderAllShapes.utils'
 import useToolStore from '../../stores/toolStore'
 
 export default function AddImage({canvasRef, contextRef}) {
@@ -19,9 +19,8 @@ export default function AddImage({canvasRef, contextRef}) {
  const  tool = useToolStore((state) => state.tool)
 
 
-
-
-  const handleImage = (e) => {
+ const handleImage = (e) => {
+  
   const file = e.target.files[0];
   if (!file) return;
 
@@ -30,6 +29,7 @@ export default function AddImage({canvasRef, contextRef}) {
     const image = new Image();
     image.onload = () => {
       setImg(image);
+      
       // No need to revoke URL since we're using Base64
     };
     image.src = event.target.result; // Base64 URL
@@ -38,20 +38,13 @@ export default function AddImage({canvasRef, contextRef}) {
 };
    
 
-
- useEffect(() => {
-
-   
-      if(tool === "image"){
-        inputRef.current.click();
-      }
-
-
-
-  
- },[tool])
+useEffect(() => {
+   if(tool === "image") inputRef.current.click();
+},[tool])
  
- useEffect(() => {
+
+
+useEffect(() => {
 
     const canvas = canvasRef.current
     const context = contextRef.current
@@ -70,12 +63,10 @@ export default function AddImage({canvasRef, contextRef}) {
     const image = (e) => {
 
       e.preventDefault()
-      if(!isDrawing) return
+      if(!isDrawing || !img) return
 
       const mousePos = getMousePos(canvas, e)
-       context.clearRect(0, 0, canvas.width, canvas.height);
-      
-
+      context.clearRect(0, 0, canvas.width, canvas.height);
       const width = mousePos.x - initialPos.x
       const height = mousePos.y - initialPos.y
 
@@ -103,17 +94,13 @@ export default function AddImage({canvasRef, contextRef}) {
         img:img.currentSrc,
         initialPos,
         mousePos
-      }
-       }
-    };
+      }}};
   
-  
- 
-
     const finishImage = (e) => {
       e.preventDefault()
        addShapes({shapeName:"image", ...imgObj})
        setIsDrawing(false)
+       setImg(null)
     }
 
     canvas.addEventListener("mousedown" , startImage)

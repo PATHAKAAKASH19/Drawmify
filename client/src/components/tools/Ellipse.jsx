@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import getMousePos from '../../utils/getMousePos'
-import createEllipse from '../../utils/createEllipse'
+import getMousePos from '../../utils/getMousePos.utils'
+import {createEllipse} from '../../utils/ellipse.utils'
 import useShapeStore from "../../stores/shapeStore";
-import renderAllShapes from "../../utils/renderAllShapes";
+import renderAllShapes from "../../utils/renderAllShapes.utils";
 import usePanningStore from '../../stores/panningStore';
 
 export default function Ellipse({canvasRef, contextRef}) {

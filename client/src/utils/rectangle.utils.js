@@ -1,5 +1,5 @@
  const createRectangle = (context,mousePos, initialPos) => {
-    const width = mousePos?.x - initialPos?.x
+      const width = mousePos?.x - initialPos?.x
       const height = mousePos?.y - initialPos?.y
 
       context.beginPath()
@@ -7,4 +7,4 @@
       context.stroke()
   }
 
-export default createRectangle
+export {createRectangle}

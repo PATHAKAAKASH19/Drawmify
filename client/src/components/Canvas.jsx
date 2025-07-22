@@ -18,10 +18,9 @@ const Canvas = () => {
     canvas.style.width = `${window.innerWidth}px `;
     canvas.style.height = `${window.innerHeight}px`;
 
-    canvas.width = window.innerWidth* window.devicePixelRatio;
+    canvas.width = window.innerWidth
     
-    canvas.height = window.innerHeight*window.devicePixelRatio;
-  
+    canvas.height = window.innerHeight
 
     const context = canvas.getContext("2d")
 

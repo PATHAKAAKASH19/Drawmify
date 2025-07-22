@@ -21,4 +21,9 @@
         context.stroke()
   }
 
-export default createArrow
+
+  const removeArrow = () => {
+      
+  }
+
+export  {createArrow}
