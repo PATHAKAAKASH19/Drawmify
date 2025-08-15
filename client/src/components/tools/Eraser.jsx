@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import useShapeStore from '../../stores/shapeStore';
 import renderAllShapes from '../../utils/renderAllShapes.utils';
 import getMousePos from '../../utils/getMousePos.utils';
+import isPointInShape from '../../utils/isPointInShape';
 
 export default function Eraser({canvasRef, contextRef}) {
 
@@ -9,8 +10,7 @@ export default function Eraser({canvasRef, contextRef}) {
   const [isEraser, setIsEraser] = useState(false)
 
   const shapesData = useShapeStore((state) => state.shapesData)
-
-
+  const removeShape = useShapeStore((state) => state.removeShape )
 
 
   useEffect(() => {
@@ -21,65 +21,46 @@ export default function Eraser({canvasRef, contextRef}) {
     if(!canvas || !context) return
 
 
-  function pointInRect(x, y, initialPos, mousePos) {
 
-    console.log(initialPos)
-    console.log(mousePos)
-    console.log(x, y)
-  // Calculate width and height (can be positive or negative)
-  const width = mousePos.x - initialPos.x;
-  const height = mousePos.y - initialPos.y;
-  
-  // Determine the actual boundaries of the rectangle
-  const left = Math.min(initialPos.x, initialPos.x + width);
-  const right = Math.max(initialPos.x, initialPos.x + width);
-  const top = Math.min(initialPos.y, initialPos.y + height);
-  const bottom = Math.max(initialPos.y, initialPos.y + height);
-  
-  // Check if point is within boundaries
-  return x >= left || x <= right || y >= top || y <= bottom;
-}
 
-  const checkShapeCollision = (x, y, context) => {
-
-    for (let index = 0; index < shapesData.length; index++) {
-      console.log(index)
-       const shapes = shapesData[index]
-        let isHit =false
-
-        if(shapes.shapeName === "rectangle"){
-          isHit = pointInRect(x, y , shapes.initialPos, shapes.mousePos)
-          console.log(isHit)
-        }
-      
-         
-      if (isHit) {
-         console.log(shapesData.splice(index, 1)); // Remove shape from array
-         console.log(shapesData)  
-          context.clearRect(0, 0 , canvas.width, canvas.height)
-         renderAllShapes(context, shapesData)
-         break; // Remove just one shape per check (or remove this to erase multiple)
+ const checkShapeCollision = (x, y) => {
+    // Check shapes in reverse order (top to bottom in z-index)
+    for (let i = shapesData.length - 1; i >= 0; i--) {
+      const shape = shapesData[i];
+      if (isPointInShape(x, y, shape)) {
+        return shape.id;
       }
     }
-
-  }
+    return null;
+  };
 
 
     const startEraser = (e) => {
 
       e.preventDefault()
       const mousePos = getMousePos(canvas, e)
+      const shapeId = checkShapeCollision(mousePos.x, mousePos.y);
+    
+      if (shapeId) removeShape(shapeId);
+    
       setIsEraser(true)
-      checkShapeCollision(mousePos.x, mousePos.y, context)
-
     }
 
     const moveEraser = (e) => {
-       e.preventDefault()
-       if(!isEraser) return
+    
+      e.preventDefault()
+      if(!isEraser) return
 
-       const mousePos = getMousePos(canvas, e)
-       checkShapeCollision(mousePos.x, mousePos.y, context)
+      const mousePos = getMousePos(canvas, e)
+      const shapeId = checkShapeCollision(mousePos.x, mousePos.y);
+    
+     
+      if(shapeId){
+          
+          removeShape(shapeId);
+      }
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      renderAllShapes(context, shapesData)
     }
 
     const stopEraser = (e) => {
@@ -91,7 +72,7 @@ export default function Eraser({canvasRef, contextRef}) {
     canvas.addEventListener("mousemove", moveEraser)
     canvas.addEventListener("mouseup" , stopEraser)
 
-     canvas.addEventListener("touchstart", startEraser)
+    canvas.addEventListener("touchstart", startEraser)
     canvas.addEventListener("touchmove", moveEraser, {passive: false})
     canvas.addEventListener("touchend", startEraser)
 
@@ -105,6 +86,6 @@ export default function Eraser({canvasRef, contextRef}) {
      canvas.removeEventListener("touchend", startEraser)
     }
 
-  }, [canvasRef, contextRef,isEraser,shapesData])
+  }, [canvasRef, contextRef,isEraser,shapesData,removeShape, isPointInShape])
   return null
 }

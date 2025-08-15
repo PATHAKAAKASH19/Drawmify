@@ -7,4 +7,13 @@
       context.stroke()
   }
 
-export {createRectangle}
+
+ const isPointInRectangle = (x, y, initialPos, mousePos) => {
+    const left = Math.min(initialPos?.x, mousePos?.x);
+    const right = Math.max(initialPos?.x, mousePos?.x);
+    const top = Math.min(initialPos?.y, mousePos?.y);
+    const bottom = Math.max(initialPos?.y,mousePos?.y);
+    
+    return x >= left && x <= right && y >= top && y <= bottom;
+  };
+export {createRectangle, isPointInRectangle}

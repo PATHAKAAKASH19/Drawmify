@@ -22,8 +22,9 @@
   }
 
 
-  const removeArrow = () => {
-      
+  const isPointInArrow = (x, y, initialPos, mousePos) => {
+
   }
 
-export  {createArrow}
+
+export  {createArrow, isPointInArrow}

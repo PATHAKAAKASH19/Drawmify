@@ -5,5 +5,9 @@
       context.stroke()
   }
 
+  const isPointInLine = (x, y, initialPos, mousePos) => {
 
-export {createLine}
+  }
+
+
+export {createLine, isPointInLine}

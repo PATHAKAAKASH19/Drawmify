@@ -10,5 +10,9 @@ const createImage = (context, img , initialPos,mousePos) => {
       
 }
 
+ const isPointInImage = (x, y, initialPos, mousePos) => {
 
-export {createImage}
+  }
+
+
+export {createImage, isPointInImage}

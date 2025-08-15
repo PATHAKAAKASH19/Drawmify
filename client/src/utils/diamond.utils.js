@@ -11,4 +11,10 @@
       context.stroke()
   }
 
-  export  {createDiamond}
+  const isPointInDiamond = (x, y, initialPos, mousePos) => {
+
+   
+}
+  
+
+  export  {createDiamond, isPointInDiamond}

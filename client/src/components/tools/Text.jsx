@@ -28,13 +28,23 @@ export default function Text({canvasRef, contextRef}) {
       renderAllShapes(context, shapesData)
       context.restore();
       context.fillText(text, pos?.x+14.98, pos?.y+21.9 )
-      if(text && offset){
+      if(text && pos && offset){
+        
         const initialPos = {
-          x : pos?.x - offset?.x+14.98,
-          y : pos?.y - offset?.y+22,
+          x : pos?.x - offset?.x+14.98 ,
+          y : pos?.y - offset?.y+21.9
         }
+        
       addShapes({shapeName:"text", initialPos, text})
+      }else if (text && pos) {
+          const initialPos = {
+          x : pos?.x+14.98 ,
+          y : pos?.y+21.9
+        }
+        addShapes({shapeName:"text", initialPos, text})
       }
+
+      
  }
 
 
@@ -46,7 +56,7 @@ export default function Text({canvasRef, contextRef}) {
     if(!canvas || ! context) return
 
       const handleText = (e) => {
-      console.log(e)
+     
       const mousePos = getMousePos(canvas, e)
       setPos(mousePos)
       setText("")
