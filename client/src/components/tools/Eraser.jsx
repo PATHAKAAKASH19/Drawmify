@@ -27,7 +27,7 @@ export default function Eraser({canvasRef, contextRef}) {
     // Check shapes in reverse order (top to bottom in z-index)
     for (let i = shapesData.length - 1; i >= 0; i--) {
       const shape = shapesData[i];
-      console.log(isPointInShape(x, y, shape))
+     
       if (isPointInShape(x, y, shape)) {
         return shape.id;
       }

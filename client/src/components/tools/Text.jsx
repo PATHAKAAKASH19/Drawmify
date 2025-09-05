@@ -86,7 +86,7 @@ export default function Text({canvasRef, contextRef}) {
     value={text} 
     onChange={(e) => {setText(e.target.value)}} 
     onBlur={() => handleTextComplete(contextRef.current, canvasRef.current)}
-    className={`absolute text-[26.6px] px-4 font-sans`} 
+    className={`absolute text-[25px] px-4 py-0.5 font-sans`} 
     style={{
       top: `${pos?.y}px`,  
       left: `${pos?.x}px`,

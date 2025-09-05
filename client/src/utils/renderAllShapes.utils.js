@@ -6,6 +6,7 @@ import  { createLine} from "./line.utils";
 import   {createEllipse} from "./ellipse.utils"
 import  { createText} from "./text.utils";
 import   {createImage} from "./image.utils";
+import { createPencil } from "./pencil.utils";
 
 
 
@@ -35,13 +36,17 @@ const renderAllShapes = (context,shapesData) => {
             createLine(context, shape.mousePos, shape.initialPos);
             break;
 
+        case "pencil":
+            createPencil(context, shape.points)
+            break;
+
         case "text":
             createText(context, shape.initialPos, shape.text);
             break;
-        case "image":
-            createImage(context, shape.img , shape.initialPos, shape.mousePos)
-           break; 
 
+        case "image":
+           createImage(context, shape.img , shape.initialPos, shape.mousePos)
+           break; 
       }
     });
 }
