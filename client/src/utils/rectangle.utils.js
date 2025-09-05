@@ -9,6 +9,7 @@
 
 
  const isPointInRectangle = (x, y, initialPos, mousePos) => {
+  
     const left = Math.min(initialPos?.x, mousePos?.x);
     const right = Math.max(initialPos?.x, mousePos?.x);
     const top = Math.min(initialPos?.y, mousePos?.y);

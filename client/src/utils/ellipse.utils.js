@@ -9,17 +9,19 @@
 
 
  const isPointInEllipse = (x, y, initialPos, mousePos) => {
-    const h = (initialPos?.x + mousePos?.x) / 2; // Center X
-    const k = (initialPos?.y + mousePos?.y) / 2; // Center Y
-    const a = Math.abs(mousePos?.x - initialPos?.x) /2; // Semi-major axis (width)
-    const b = Math.abs(mousePos?.y - initialPos?.y) /2; // Semi-minor axis (height)
-
-    // Check if the point (x, y) is inside the ellipse
-    const normalizedX = (x - h) / a;
-    const normalizedY = (y - k) / b;
-   
   
-    return normalizedX * normalizedX + normalizedY * normalizedY <=1;
+    const h = initialPos?.x ; // Center X
+    const k = initialPos?.y ; // Center Y
+    const a = Math.abs(mousePos?.x - initialPos?.x)/2 ; // Semi-major axis (width)
+    const b = Math.abs(mousePos?.y - initialPos?.y)/2 // Semi-minor axis (height)
+ 
+    
+    if (a === 0 || b === 0) return false;
+    const distance =
+    Math.pow((x - h) / a, 2) + Math.pow((y - k) / b, 2);
+            
+    return distance <=1
+  
   }
 
 

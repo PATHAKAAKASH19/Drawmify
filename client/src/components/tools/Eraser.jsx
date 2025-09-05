@@ -27,6 +27,7 @@ export default function Eraser({canvasRef, contextRef}) {
     // Check shapes in reverse order (top to bottom in z-index)
     for (let i = shapesData.length - 1; i >= 0; i--) {
       const shape = shapesData[i];
+      console.log(isPointInShape(x, y, shape))
       if (isPointInShape(x, y, shape)) {
         return shape.id;
       }
@@ -58,9 +59,12 @@ export default function Eraser({canvasRef, contextRef}) {
       if(shapeId){
           
           removeShape(shapeId);
+         
       }
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      renderAllShapes(context, shapesData)
+
+       context.clearRect(0, 0, canvas.width, canvas.height)
+       renderAllShapes(context, shapesData)
+
     }
 
     const stopEraser = (e) => {
@@ -86,6 +90,6 @@ export default function Eraser({canvasRef, contextRef}) {
      canvas.removeEventListener("touchend", startEraser)
     }
 
-  }, [canvasRef, contextRef,isEraser,shapesData,removeShape, isPointInShape])
+  }, [canvasRef, contextRef,isEraser,shapesData,removeShape])
   return null
 }

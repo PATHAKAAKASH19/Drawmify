@@ -13,7 +13,17 @@
 
   const isPointInDiamond = (x, y, initialPos, mousePos) => {
 
-   
+      const centerX = initialPos?.x 
+      const centerY = initialPos?.y 
+      const width = Math.abs(2*(mousePos?.x - initialPos?.x));
+      const height = Math.abs(2 * (mousePos?.y - initialPos?.y));
+                
+      // Normalize coordinates to diamond's center
+      const dx = Math.abs(x - centerX);
+      const dy = Math.abs(y - centerY);
+                
+      // Check if point is inside the diamond using the diamond inequality
+      return (dx / (width/2) + dy / (height/2)) <= 1.05;
 }
   
 

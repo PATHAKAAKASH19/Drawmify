@@ -10,8 +10,8 @@
   
   const isPointInShape = (x, y, shape) => {
     switch (shape.shapeName) {
-        case "diamond":
-           return isPointInDiamond(x, y, shape.initialPos, shape.mousePos)
+      case "diamond":
+        return isPointInDiamond(x, y, shape.initialPos, shape.mousePos)
       case 'rectangle':
         return isPointInRectangle(x, y, shape.initialPos,shape.mousePos);
       case "ellipse":

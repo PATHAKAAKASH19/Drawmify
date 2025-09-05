@@ -26,7 +26,7 @@ const Canvas = () => {
 
     context.lineCap = "round";
     context.strokeStyle = "black";
-    context.lineWidth = 2;
+    context.lineWidth = 1.5;
     contextRef.current = context
 
     setCanvasSetUp(true)
