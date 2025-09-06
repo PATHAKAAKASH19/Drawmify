@@ -16,7 +16,7 @@ const isPointInPencil = (x, y, pointArray) => {
       let i = 0
       while(i < pointArray.length && pointArray.length){
       
-        if(x === pointArray[i].x || y === pointArray[i].y){
+        if(x === pointArray[i].x && y === pointArray[i].y){
             return true
         }
         i++

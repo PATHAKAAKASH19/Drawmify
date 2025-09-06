@@ -20,7 +20,8 @@ export default function Text({canvasRef, contextRef}) {
 
       if(!context) return
       
-      context.font = "25px sans-serif";
+      context.font = "normal 25px sans-serif";
+     
       context.textBaseline = "middle";
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();

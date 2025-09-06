@@ -26,7 +26,7 @@
          return isPointInImage(x, y, shape.initialPos, shape.mousePos);
       case "text":
          return isPointInText(x, y,shape.initialPos)
-        default:
+      default:
         return false;
     }
   };
