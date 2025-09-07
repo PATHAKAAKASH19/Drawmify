@@ -10,6 +10,14 @@ const shapeStore = (set) => ({
      },
      removeShape:(shapeId) => {
       set(state => ({shapesData : state.shapesData.filter(s => (s.id !== shapeId))}))
+   },
+
+   undo:()=> {
+     set(state => ({shapesData:state.shapesData.slice(0, -1)}))
+   },
+
+   redo:() => {
+
    }
 })
 

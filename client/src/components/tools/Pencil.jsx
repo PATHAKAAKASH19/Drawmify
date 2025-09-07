@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos.utils';
 import useShapeStore from '../../stores/shapeStore';
 import simpliyfy from "simplify-js"
-import renderAllShapes from "../../utils/renderAllShapes.utils";
+import usePanningStore from '../../stores/panningStore';
+
 
 export default function Pencil({canvasRef, contextRef,isActive}) {
    
   const [isDrawing, setIsDrawing] = useState(false)
-  const [points, setPoints] = useState([])
+  const [points, setPoints] = useState(null)
   const addShapes = useShapeStore(state =>  state.addShapes)
-  const shapesData = useShapeStore((state) => state.shapesData)
+  const offset = usePanningStore(state =>  state.offset)
+  
   
   useEffect(() => {
    
@@ -23,7 +25,7 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
         const mousePos = getMousePos(canvas, e);
         context.beginPath()
         context.moveTo(mousePos.x, mousePos.y)
-        setPoints(prev => [...prev, mousePos])
+        setPoints([{x : mousePos.x - offset?.x, y: mousePos.y - offset?.y}])
         setIsDrawing(true)
      
     }
@@ -32,9 +34,12 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
         e.preventDefault()  
         setIsDrawing(false)
         context.closePath()
-        const pointArray = simpliyfy(points, 0.5, false)
-        addShapes({shapeName:"pencil", points:pointArray})
-     
+      
+        if(points){
+            const pointArray = simpliyfy(points, 1, false)
+            addShapes({shapeName:"pencil", points:pointArray})
+        }
+  
     }
             
     const draw = (e) => {
@@ -45,14 +50,14 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
       const mousePos = getMousePos(canvas, e);
       context.lineTo(mousePos.x, mousePos.y)
       context.stroke()
-      setPoints(prev =>  [...prev, mousePos])
+      setPoints(prev =>  [...prev, {x : mousePos.x - offset?.x, y: mousePos.y - offset?.y}])
  
     }
 
     canvas.addEventListener("mousedown", startDrawing);
     canvas.addEventListener("mousemove", draw);
     canvas.addEventListener("mouseup", finishDrawing);
-    canvas.addEventListener("mouseleave", finishDrawing);
+ 
 
 
     canvas.addEventListener("touchstart", startDrawing)
@@ -64,7 +69,7 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
       canvas.removeEventListener("mousedown", startDrawing);
       canvas.removeEventListener("mousemove", draw);
       canvas.removeEventListener("mouseup", finishDrawing);
-      canvas.removeEventListener("mouseleave", finishDrawing);
+     
 
       canvas.removeEventListener("touchstart", startDrawing)
       canvas.removeEventListener("touchmove", draw, {passive: false})

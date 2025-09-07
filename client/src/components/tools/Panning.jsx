@@ -64,7 +64,7 @@ export default function Panning({canvasRef, contextRef}) {
        e.preventDefault()  
        setIsPanning(false)
      
-       if(offsetObj !==null){
+       if(offsetObj !== null){
        addOffset({x:offsetObj?.x,y:offsetObj?.y })
        }
     }

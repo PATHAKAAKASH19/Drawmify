@@ -3,6 +3,7 @@ import useShapeStore from '../../stores/shapeStore';
 import renderAllShapes from '../../utils/renderAllShapes.utils';
 import getMousePos from '../../utils/getMousePos.utils';
 import isPointInShape from '../../utils/isPointInShape';
+import usePanningStore from '../../stores/panningStore';
 
 export default function Eraser({canvasRef, contextRef}) {
 
@@ -10,7 +11,8 @@ export default function Eraser({canvasRef, contextRef}) {
   const [isEraser, setIsEraser] = useState(false)
 
   const shapesData = useShapeStore((state) => state.shapesData)
-  const removeShape = useShapeStore((state) => state.removeShape )
+  const removeShape = useShapeStore((state) => state.removeShape)
+  const offset  = usePanningStore((state) =>  state.offset)
 
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export default function Eraser({canvasRef, contextRef}) {
 
 
 
- const checkShapeCollision = (x, y) => {
+  const checkShapeCollision = (x, y) => {
     // Check shapes in reverse order (top to bottom in z-index)
     for (let i = shapesData.length - 1; i >= 0; i--) {
       const shape = shapesData[i];
@@ -40,10 +42,12 @@ export default function Eraser({canvasRef, contextRef}) {
 
       e.preventDefault()
       const mousePos = getMousePos(canvas, e)
-      const shapeId = checkShapeCollision(mousePos.x, mousePos.y);
-    
+     
+      
+      const shapeId = checkShapeCollision(mousePos.x - offset?.x, mousePos.y - offset?.y);
+
       if (shapeId) removeShape(shapeId);
-    
+                          
       setIsEraser(true)
     }
 
@@ -53,23 +57,23 @@ export default function Eraser({canvasRef, contextRef}) {
       if(!isEraser) return
 
       const mousePos = getMousePos(canvas, e)
-      const shapeId = checkShapeCollision(mousePos.x, mousePos.y);
+      const shapeId = checkShapeCollision(mousePos.x - offset?.x, mousePos.y - offset?.y);
     
      
       if(shapeId){
-          
           removeShape(shapeId);
-         
       }
 
-       context.clearRect(0, 0, canvas.width, canvas.height)
-       renderAllShapes(context, shapesData)
-
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      context.save();
+      context.translate(offset?.x, offset?.y);
+      renderAllShapes(context, shapesData)
+      context.restore();
     }
 
     const stopEraser = (e) => {
        e.preventDefault()
-       setIsEraser(true)
+       setIsEraser(false)
     }
 
     canvas.addEventListener("mousedown" , startEraser)

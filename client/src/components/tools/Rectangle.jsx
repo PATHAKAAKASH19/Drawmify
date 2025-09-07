@@ -70,7 +70,9 @@ export default function Rectangle({ canvasRef, contextRef }) {
     const finishDrawing = (e) => {
         e.preventDefault() 
     
+   
         addShapes({ shapeName:"rectangle",...rectangleObj})
+      
         setIsDrawing(false);
     };
 

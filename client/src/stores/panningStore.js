@@ -2,7 +2,7 @@ import {create} from "zustand"
 import { devtools, persist } from "zustand/middleware"
 
 const panningStore = (set) => ({
-      offset:null,
+      offset:{x:0,y:0},
       addOffset:(offsetObj) => {
           set({offset:offsetObj})
       }

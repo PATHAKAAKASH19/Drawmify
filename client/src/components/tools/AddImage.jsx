@@ -11,7 +11,7 @@ export default function AddImage({canvasRef, contextRef}) {
  const [initialPos, setInitialPos] = useState(null)
  const [img, setImg] = useState(null)
  const inputRef = useRef(null)
-
+ const isInitialMount = useRef(true);
   
  const addShapes = useShapeStore((state) => state.addShapes)
  const shapesData = useShapeStore((state) => state.shapesData)
@@ -19,10 +19,14 @@ export default function AddImage({canvasRef, contextRef}) {
  const  tool = useToolStore((state) => state.tool)
 
 
+
  const handleImage = (e) => {
-  
+  e.preventDefault()
   const file = e.target.files[0];
-  if (!file) return;
+  if (!file) {
+  
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = (event) => {
@@ -39,7 +43,12 @@ export default function AddImage({canvasRef, contextRef}) {
    
 
 useEffect(() => {
-   if(tool === "image") inputRef.current.click();
+
+     if (isInitialMount.current) {
+      isInitialMount.current = false;
+     }else if(tool === "image"  ) {
+      inputRef.current.click()
+    ;}
 },[tool])
  
 
@@ -98,9 +107,9 @@ useEffect(() => {
   
     const finishImage = (e) => {
       e.preventDefault()
-       addShapes({shapeName:"image", ...imgObj})
-       setIsDrawing(false)
-       setImg(null)
+      addShapes({shapeName:"image", ...imgObj})
+      setIsDrawing(false)
+      setImg(null)
     }
 
     canvas.addEventListener("mousedown" , startImage)
@@ -125,7 +134,7 @@ useEffect(() => {
   }, [canvasRef,img,isDrawing,contextRef, addShapes,offset, shapesData, initialPos])
   return (
     <>
-      <input type="file" accept="image/*" ref={inputRef}  onChange={handleImage} className="hidden"/>
+      <input type="file"   accept="image/*" ref={inputRef}  onChange={handleImage} className="hidden"/>
     </>
   )
 }
