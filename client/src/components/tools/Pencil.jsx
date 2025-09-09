@@ -76,7 +76,7 @@ export default function Pencil({canvasRef, contextRef,isActive}) {
       canvas.removeEventListener("touchend", finishDrawing)
     };
 
-    }, [isActive, canvasRef,contextRef,isDrawing,addShapes,points])
+    }, [isActive, canvasRef,contextRef,isDrawing,addShapes,points, offset])
     
   return null
 }

@@ -9,7 +9,7 @@ import useToolStore from '../stores/toolStore';
  
 export default function SelectTool() {
 
-  const [selectedTool, setSelectedTool] = useState("selector")
+  const [selectedTool, setSelectedTool] = useState("rectangle")
   const [lock, setLock] = useState(false)
   const changeTool = useToolStore((state) => state.changeTool)
   
@@ -68,7 +68,7 @@ export default function SelectTool() {
   ]
 
   return (
-    <div className="absolute flex gap-2 bottom-10 border px-5 py-1 rounded-2xl bg-white items-center">
+    <div className="absolute flex gap-2 bottom-10 border px-5 py-1 rounded-2xl bg-white items-center cursor-pointer">
       <div className={`px-2.5 py-2.5 rounded-xl hover:cursor-pointer ${lock?`bg-blue-300`:"hover:bg-blue-100"}`}>
         { lock ?<LockKeyhole onClick={() => setLock(false)}  className="size-5"/>:<LockKeyholeOpen onClick={() => setLock(true)}  className="size-5"/>}
       </div>

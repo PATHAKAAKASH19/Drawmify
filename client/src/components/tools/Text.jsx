@@ -22,25 +22,25 @@ export default function Text({canvasRef, contextRef}) {
       
       context.font = "normal 25px sans-serif";
      
-      context.textBaseline = "middle";
+      context.textBaseline = "top";
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();
       context.translate(offset?.x, offset?.y); 
       renderAllShapes(context, shapesData)
       context.restore();
-      context.fillText(text, pos?.x+14.98, pos?.y+21.9 )
+      context.fillText(text, pos?.x, pos?.y+8)
       if(text && pos && offset){
         
         const initialPos = {
-          x : pos?.x - offset?.x+14.98 ,
-          y : pos?.y - offset?.y+21.9
+          x : pos?.x - offset?.x,
+          y : pos?.y - offset?.y+8
         }
         
       addShapes({shapeName:"text", initialPos, text})
       }else if (text && pos) {
           const initialPos = {
-          x : pos?.x+14.98 ,
-          y : pos?.y+21.9
+          x : pos?.x,
+          y : pos?.y+8
         }
         addShapes({shapeName:"text", initialPos, text})
       }
@@ -81,20 +81,17 @@ export default function Text({canvasRef, contextRef}) {
   return (
     <>
     {( pos !== null)&& 
-    <input 
+    <textarea 
     ref={inputRef}
     type='text' 
     value={text} 
     onChange={(e) => {setText(e.target.value)}} 
     onBlur={() => handleTextComplete(contextRef.current, canvasRef.current)}
-    className={`absolute text-[25px] px-4 py-0.5 font-sans`} 
+    className={`fixed text-2xl p-0 m-0 w-full h-32 border-none rounded-lg 
+         outline-none appearance-none text-black-800 font-sans`} 
     style={{
       top: `${pos?.y}px`,  
       left: `${pos?.x}px`,
-      right:"0px",
-      border:`0px`,
-      outline:"none",
-      
     }}/>
     }
   </>

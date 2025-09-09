@@ -94,6 +94,6 @@ export default function Eraser({canvasRef, contextRef}) {
      canvas.removeEventListener("touchend", startEraser)
     }
 
-  }, [canvasRef, contextRef,isEraser,shapesData,removeShape])
+  }, [canvasRef, contextRef,isEraser,shapesData,removeShape,offset])
   return null
 }
