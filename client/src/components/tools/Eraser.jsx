@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import useShapeStore from '../../stores/shapeStore';
-import renderAllShapes from '../../utils/renderAllShapes.utils';
 import getMousePos from '../../utils/getMousePos.utils';
 import isPointInShape from '../../utils/isPointInShape';
 import usePanningStore from '../../stores/panningStore';
+import rough from "roughjs"
 
 export default function Eraser({canvasRef, contextRef}) {
 
@@ -19,6 +19,7 @@ export default function Eraser({canvasRef, contextRef}) {
     
     const canvas = canvasRef.current
     const context = contextRef.current
+    const roughCanvas = rough.canvas(canvas)
 
     if(!canvas || !context) return
 
@@ -67,7 +68,11 @@ export default function Eraser({canvasRef, contextRef}) {
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();
       context.translate(offset?.x, offset?.y);
-      renderAllShapes(context, shapesData)
+      shapesData.forEach((shape) => {
+         if(shape.roughObj){
+            roughCanvas.draw(shape.roughObj)
+         }
+      })
       context.restore();
     }
 

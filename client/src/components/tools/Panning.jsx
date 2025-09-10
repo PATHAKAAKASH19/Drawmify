@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos.utils'
-import renderAllShapes from '../../utils/renderAllShapes.utils'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
+import rough from "roughjs"
+
 
 export default function Panning({canvasRef, contextRef}) {
  
   const [isPanning , setIsPanning] = useState(false)
-
   const [start, setStart] = useState(null)
  
   const shapesData = useShapeStore((state) => state.shapesData)
@@ -15,13 +15,11 @@ export default function Panning({canvasRef, contextRef}) {
   const  offset  = usePanningStore((state) =>  state.offset)
 
 
-
-
-
   useEffect(() => {
 
     const canvas = canvasRef.current
     const context = contextRef.current
+    const roughCanvas = rough.canvas(canvas)
     let offsetObj = null
 
    
@@ -29,13 +27,11 @@ export default function Panning({canvasRef, contextRef}) {
    
     const startPanning = (e) => {
        e.preventDefault()  
-       setIsPanning(true)
        const mousePos = getMousePos(canvas,e)
-
- 
        const startX = mousePos?.x - offset?.x
        const startY = mousePos?.y - offset?.y
        setStart({x:startX, y:startY})
+       setIsPanning(true)
     }
 
     const panning = (e) => {
@@ -44,9 +40,9 @@ export default function Panning({canvasRef, contextRef}) {
        if(!isPanning) return
 
         const mousePos = getMousePos(canvas,e)
-        
         const offsetX = mousePos?.x - start?.x
         const offsetY = mousePos?.y - start?.y
+       
         offsetObj = {
           x:offsetX,
           y:offsetY
@@ -55,7 +51,13 @@ export default function Panning({canvasRef, contextRef}) {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.save();
         context.translate(offsetX, offsetY); 
-        renderAllShapes(context, shapesData);
+
+        shapesData.forEach((shape) => {
+            if(shape.roughObj){
+               roughCanvas.draw(shape.roughObj)
+            }
+        })
+
         context.restore();
    
     }
@@ -65,7 +67,7 @@ export default function Panning({canvasRef, contextRef}) {
        setIsPanning(false)
      
        if(offsetObj !== null){
-       addOffset({x:offsetObj?.x,y:offsetObj?.y })
+         addOffset({x:offsetObj?.x,y:offsetObj?.y })
        }
     }
 

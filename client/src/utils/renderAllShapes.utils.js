@@ -47,6 +47,9 @@ const renderAllShapes = (context,shapesData) => {
         case "image":
            createImage(context, shape.img , shape.initialPos, shape.mousePos)
            break; 
+
+         default:
+            return
       }
     });
 }

@@ -1,76 +1,70 @@
 import { useEffect, useState } from 'react'
 import getMousePos from '../../utils/getMousePos.utils'
-import {createLine} from '../../utils/line.utils'
 import useShapeStore from "../../stores/shapeStore";
-import renderAllShapes from "../../utils/renderAllShapes.utils";
 import usePanningStore from '../../stores/panningStore';
+import rough from "roughjs"
+import createShape from '../../utils/createShape.utils';
+
 
 export default function Line({canvasRef, contextRef}) {
   
   const [isDrawing, setIsDrawing] = useState(false)
   const [initialPos, setInitialPos] = useState(null)
  
-
-   const addShapes = useShapeStore((state) => state.addShapes)
-   const shapesData = useShapeStore((state) => state.shapesData)
-   const  offset  = usePanningStore((state) =>  state.offset)
+  const addShapes = useShapeStore((state) => state.addShapes)
+  const shapesData = useShapeStore((state) => state.shapesData)
+  const  offset  = usePanningStore((state) =>  state.offset)
 
 
   useEffect(() => {
     
     const canvas = canvasRef.current
     const context = contextRef.current
-    let lineObj
+    const roughCanvas = rough.canvas(canvas)
+    let element
 
     if(!canvas || !context) return
 
     const startDrawing = (e) => {
       e.preventDefault()    
       const mousePos = getMousePos(canvas, e)
+      element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "line")  
+      roughCanvas.draw(element.roughObj)         
       setInitialPos(mousePos)
       setIsDrawing(true)
     }
 
     const draw = (e) => {
+
       e.preventDefault() 
       if(!isDrawing || !initialPos) return
 
       const mousePos = getMousePos(canvas, e)
       context.clearRect(0, 0, canvas.width, canvas.height)
-
-
       context.save();
       context.translate(offset?.x, offset?.y); 
-      renderAllShapes(context, shapesData)
+
+      shapesData.forEach((shape) => {
+        if(shape.roughObj){
+          roughCanvas.draw(shape.roughObj)
+        }
+      })
+
+      element = createShape(
+        initialPos.x - offset.x,
+        initialPos.y - offset.y, 
+        mousePos.x - offset.x, 
+        mousePos.y - offset.y, 
+        "line"
+      )  
+      roughCanvas.draw(element.roughObj)  
       context.restore();
-      createLine(context, mousePos, initialPos)
 
-
-
-       if(offset){
-
-        lineObj = {
-        initialPos:{
-          x:initialPos?.x - offset?.x,
-          y:initialPos?.y - offset?.y
-        },
-        mousePos:{
-          x:mousePos?.x - offset?.x,
-          y:mousePos?.y - offset?.y
-        }}
-       }else{
-         lineObj = {
-          initialPos,
-          mousePos
-         }
-       }
-   
     }
 
     const finishDrawing = (e) => {
       e.preventDefault()
-    
-      addShapes({ shapeName:"line",...lineObj})
+      addShapes(element)
       setIsDrawing(false)
     }
 

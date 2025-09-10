@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
 import getMousePos from "../../utils/getMousePos.utils";
-import {createRectangle} from "../../utils/rectangle.utils";
 import useShapeStore from "../../stores/shapeStore";
-import renderAllShapes from "../../utils/renderAllShapes.utils";
 import usePanningStore from "../../stores/panningStore";
+import createShape from "../../utils/createShape.utils";
 import rough from "roughjs"
 
-const createElement = (x1, y1, x2, y2) => {
-      const generator = rough.generator()
-      const roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1)
-      console.log(roughObj)
-      return {x1, y1, x2, y2,roughObj}
-}
 
 export default function Rectangle({ canvasRef, contextRef }) {
 
@@ -27,15 +20,14 @@ export default function Rectangle({ canvasRef, contextRef }) {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const roughCanvas = rough.canvas(canvas)
-
-   let element
+    let element
 
     if (!canvas || !context) return;
 
     const startDrawing = (e) => {
       e.preventDefault() 
       const mousePos = getMousePos(canvas, e);
-      element = createElement(mousePos.x, mousePos.y, mousePos.x, mousePos.y)
+      element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "rectangle")
       roughCanvas.draw(element.roughObj)
       setInitialPos(mousePos);
       setIsDrawing(true);
@@ -49,7 +41,6 @@ export default function Rectangle({ canvasRef, contextRef }) {
 
       const mousePos = getMousePos(canvas, e);
       context.clearRect(0, 0 , canvas.width, canvas.height)
-
       context.save()
       context.translate(offset?.x, offset?.y)
      
@@ -57,29 +48,24 @@ export default function Rectangle({ canvasRef, contextRef }) {
        if(shape.roughObj){
           roughCanvas.draw(shape.roughObj)
         }
-     })
+     }) 
  
-      context.restore()
-      console.log( initialPos, offset )
-      element = createElement(
+      element = createShape(
         initialPos.x -offset.x, 
         initialPos.y -offset.y,
         mousePos.x -  offset.x,
-        mousePos.y - offset.y
+        mousePos.y - offset.y,
+        "rectangle"
       )
 
-      context.save();
-      context.translate(offset.x, offset.y);
+   
       roughCanvas.draw(element.roughObj)
-      context.restore();
+      context.restore()
     };
 
     const finishDrawing = (e) => {
         e.preventDefault() 
-    
-   
         addShapes(element)
-      
         setIsDrawing(false);
     };
 
@@ -100,7 +86,7 @@ export default function Rectangle({ canvasRef, contextRef }) {
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
     };
-  }, [canvasRef, contextRef, isDrawing, offset,initialPos,addShapes , shapesData]);
+  }, [canvasRef, contextRef, isDrawing, offset,initialPos,addShapes, shapesData]);
 
   return null;
 }
