@@ -5,6 +5,7 @@ import usePanningStore from '../../stores/panningStore';
 import rough from "roughjs"
 import createShape from '../../utils/createShape.utils';
 
+
 export default function Arrow({canvasRef, contextRef}) {
 
   const [isDrawing, setIsDrawing] = useState(false)
@@ -22,13 +23,20 @@ export default function Arrow({canvasRef, contextRef}) {
      const roughCanvas = rough.canvas(canvas)
      let element
 
-     if(!canvas || ! context) return
+     if(!canvas || !context) return
 
      const startDrawing = (e) => {
         e.preventDefault()
         const mousePos = getMousePos(canvas, e)
         element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "arrow")
-        roughCanvas.draw(element.roughObj)
+        const {arrowline, arrowhead1, arrowhead2} = element.roughObj
+        if(arrowline && arrowhead1 && arrowhead2){
+          roughCanvas.draw(arrowline)
+          roughCanvas.draw(arrowhead1)
+          roughCanvas.draw(arrowhead2)
+        }
+    
+      
         setInitialPos(mousePos)
         setIsDrawing(true)
       }
@@ -43,9 +51,17 @@ export default function Arrow({canvasRef, contextRef}) {
         context.translate(offset?.x, offset?.y); 
         
         shapesData.forEach((shape) => {
-        if(shape.roughObj){
+
+           if(shape.roughObj){
+              const {arrowline, arrowhead1, arrowhead2} = shape.roughObj
+        if(arrowline && arrowhead1 && arrowhead2){
+          roughCanvas.draw(arrowline)
+          roughCanvas.draw(arrowhead1)
+          roughCanvas.draw(arrowhead2)
+        }else{
           roughCanvas.draw(shape.roughObj)
         }
+           }
        }) 
  
       element = createShape(
@@ -56,7 +72,13 @@ export default function Arrow({canvasRef, contextRef}) {
         "arrow"
       )
 
-      roughCanvas.draw(element.roughObj)
+       const {arrowline, arrowhead1, arrowhead2} = element.roughObj
+        if(arrowline && arrowhead1 && arrowhead2){
+          roughCanvas.draw(arrowline)
+          roughCanvas.draw(arrowhead1)
+          roughCanvas.draw(arrowhead2)
+        }
+    
       context.restore();
        
      }

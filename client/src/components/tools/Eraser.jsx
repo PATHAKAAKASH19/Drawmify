@@ -69,10 +69,19 @@ export default function Eraser({canvasRef, contextRef}) {
       context.save();
       context.translate(offset?.x, offset?.y);
       shapesData.forEach((shape) => {
-         if(shape.roughObj){
-            roughCanvas.draw(shape.roughObj)
-         }
-      })
+
+           if(shape.roughObj){
+              const {arrowline, arrowhead1, arrowhead2} = shape.roughObj
+        if(arrowline && arrowhead1 && arrowhead2){
+          roughCanvas.draw(arrowline)
+          roughCanvas.draw(arrowhead1)
+          roughCanvas.draw(arrowhead2)
+        }else{
+          roughCanvas.draw(shape.roughObj)
+        }
+           }
+       }) 
+ 
       context.restore();
     }
 
