@@ -1,6 +1,6 @@
 import rough from "roughjs"
 
-const createShape = (x1, y1, x2, y2, shapeName) => {
+const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
 
       const generator = rough.generator()
 
@@ -8,7 +8,7 @@ const createShape = (x1, y1, x2, y2, shapeName) => {
       switch(shapeName) {
         
         case "rectangle":
-              roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1);
+              roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1, optionObj);
               break;
 
         case "diamond":
@@ -16,7 +16,7 @@ const createShape = (x1, y1, x2, y2, shapeName) => {
               break;
 
         case "ellipse": 
-               roughObj = generator.ellipse(x1, y1, x2 - x1, y2 - y1);
+               roughObj = generator.ellipse(x1, y1, x2 - x1, y2 - y1, optionObj);
                break;
 
         case "line":

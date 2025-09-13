@@ -1,3 +1,4 @@
+  
   import { isPointInRectangle } from "./rectangle.utils";
   import { isPointInDiamond } from "./diamond.utils";
   import { isPointInEllipse } from "./ellipse.utils";
@@ -32,7 +33,7 @@
       case "ellipse":
          return isPointInEllipse(x, y, initialPos, mousePos);
       case "arrow":
-          return isPointInArrow(x, y, initialPos, mousePos );
+          return isPointInArrow(x, y, initialPos, mousePos);
       case "line":
         return isPointInLine(x, y, initialPos, mousePos);
       case "pencil":
@@ -46,4 +47,12 @@
     }
   };
 
-export default isPointInShape
+
+  const checkShapeCollision = (x, y, shapesData) => {
+    const shape = shapesData.find(shape => isPointInShape(x, y, shape))
+    if(shape) return shape;
+    
+    return null;
+  };
+
+  export default checkShapeCollision

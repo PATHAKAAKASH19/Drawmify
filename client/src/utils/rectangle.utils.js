@@ -1,9 +1,19 @@
- const createRectangle = (context,mousePos, initialPos) => {
-      const width = mousePos?.x - initialPos?.x
-      const height = mousePos?.y - initialPos?.y
+ const createRectangle = (context,mousePos, initialPos, shapeData) => {
+
+     const {x1, y1, x2, y2} = shapeData
+      const dx = mousePos?.x - initialPos?.x
+      const dy = mousePos?.y - initialPos?.y
+     
+      const rectX1 = x1 + dx - 20
+      const rectY1 = y1 + dy -20
+      const rectX2 = x2 + dx +20
+      const rectY2 = y2 + dy +20
+
+
 
       context.beginPath()
-      context.rect(initialPos?.x, initialPos?.y, width, height);
+      context.rect(rectX1 , rectY1 , rectX2 - rectX1, rectY2 - rectY1);
+      context.strokeStyle = "blue"
       context.stroke()
   }
 

@@ -15,12 +15,6 @@ const Canvas = () => {
   const [canvasSetUp, setCanvasSetUp] = useState(false)
 
 
-  const shapesData = useShapeStore((state) => state.shapesData)
-
-
-
-  const  offset  = usePanningStore((state) =>  state.offset)
-  const  tool = useToolStore(state =>  state.tool) 
  
   useLayoutEffect(() => {
 
@@ -78,16 +72,16 @@ const Canvas = () => {
       <SelectTool/>
       <canvas
         ref={canvasRef}
-        className={`bg-white  border-gray-300  border-2 ${tool === "panning"? "cursor-grab":"cursor-crosshair"}`}
+        className={`bg-white  border-gray-300  border-2`}
       />
-      <button 
+      {/* <button 
       className="absolute border-2 w-30 h-12 rounded-2xl bg-amber-400
       text-amber-50 font-medium bottom-8 left-15 hover:cursor-pointer"
       type="button"
     
       >
       undo
-      </button>
+      </button> */}
       {canvasSetUp &&(<GetTool canvasRef={canvasRef} roughCanvasRef={roughCanvasRef} contextRef={contextRef}/>)}
     </div>
   );

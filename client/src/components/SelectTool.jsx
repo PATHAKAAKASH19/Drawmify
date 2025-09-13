@@ -75,8 +75,8 @@ export default function SelectTool() {
       {
         toolsIconArray.map((tool, i) => {
           return (
-            <div key={i} className={`px-2.5 py-2.5 rounded-xl hover:cursor-pointer ${selectedTool===tool.name ? `bg-blue-300`:"hover:bg-blue-100"}`} onClick={() => handleToolSelection(tool.name)}>
-             {React.cloneElement(tool.element, {className:"size-4"}) }
+            <div key={i} title={tool.name} className={`px-2.5 py-2.5 rounded-xl hover:cursor-pointer ${selectedTool===tool.name ? `bg-blue-300`:"hover:bg-blue-100"}`} onClick={() => handleToolSelection(tool.name)}>
+             {React.cloneElement(tool.element, {className:"size-4" }) }
             </div>
           )
         })

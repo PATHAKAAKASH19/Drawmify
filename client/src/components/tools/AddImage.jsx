@@ -81,7 +81,7 @@ useEffect(() => {
 
       context.save();
       context.translate(offset?.x, offset?.y)
-      renderAllShapes(context, shapesData)
+     
       context.restore();
       context.drawImage(img, initialPos.x, initialPos.y, width, height);
      
