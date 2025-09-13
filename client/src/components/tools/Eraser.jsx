@@ -4,6 +4,7 @@ import getMousePos from '../../utils/getMousePos.utils';
 import usePanningStore from '../../stores/panningStore';
 import checkShapeCollision from '../../utils/checkShapeCollision.utils';
 import rough from "roughjs"
+import { createPencil } from '../../utils/pencil.utils';
 
 export default function Eraser({canvasRef, contextRef}) {
 
@@ -45,18 +46,23 @@ export default function Eraser({canvasRef, contextRef}) {
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();
       context.translate(offset?.x, offset?.y);
-      shapesData.forEach((shape) => {
-
-        if(shape.roughObj){
-          const {arrowline, arrowhead1, arrowhead2} = shape.roughObj
-        if(arrowline && arrowhead1 && arrowhead2){
+    
+      shapesData.forEach((shape) =>{
+           if(shape.roughObj){
+          
+        if(shape.shapeName === "arrow"){
+          const { arrowline,arrowhead1, arrowhead2} = shape.roughObj
           roughCanvas.draw(arrowline)
           roughCanvas.draw(arrowhead1)
           roughCanvas.draw(arrowhead2)
-        }else{
-          roughCanvas.draw(shape.roughObj)
-        }}}) 
- 
+        }else {
+           roughCanvas.draw(shape.roughObj)
+        }}
+    
+        if(shape.shapeName === "pencil"){
+          createPencil(shape.points, context)
+        }})
+
       context.restore();
     }
 

@@ -21,11 +21,11 @@
       y:shape.y2
     }
 
-    let points
-    if(shape.shapeName === "pencil"){
-     points = shape.points
-    }
+ 
+    
     switch (shape.shapeName) {
+      case "pencil":
+         return isPointInPencil(x, y, shape.points);
       case "diamond":
         return isPointInDiamond(x, y, initialPos, mousePos)
       case 'rectangle':
@@ -36,8 +36,7 @@
           return isPointInArrow(x, y, initialPos, mousePos);
       case "line":
         return isPointInLine(x, y, initialPos, mousePos);
-      case "pencil":
-         return isPointInPencil(x, y, points);
+  
       case "image":
          return isPointInImage(x, y, initialPos, mousePos);
       case "text":

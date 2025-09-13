@@ -5,7 +5,7 @@ import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
 import createShape from '../../utils/createShape.utils'
 import rough from "roughjs"
-import { createRectangle } from '../../utils/rectangle.utils'
+import { createPencil } from '../../utils/pencil.utils';
 
 export default function Selector({canvasRef, contextRef}) {
 
@@ -26,13 +26,14 @@ export default function Selector({canvasRef, contextRef}) {
      const context = contextRef.current
      const roughCanvas = rough.canvas(canvas)
    
-     if(!canvas || ! context) return
+     if(!canvas || !context) return
 
 
      const startDrawing = (e) => {
         e.preventDefault()
         const mousePos = getMousePos(canvas, e)
         const element = checkShapeCollision(mousePos.x- offset.x, mousePos.y - offset.y , shapesData)
+       
         if(element){
           setSelectedShape(element)
           setIsSelected(true)
@@ -55,27 +56,29 @@ export default function Selector({canvasRef, contextRef}) {
       context.save();
       context.translate(offset?.x, offset?.y); 
 
-      shapesData.forEach((shape) => {
-
-      if(shape.roughObj){
-          const {arrowline, arrowhead1, arrowhead2} = shape.roughObj
-
-
-        if(arrowline && arrowhead1 && arrowhead2){
+  
+      shapesData.forEach((shape) =>{
+           if(shape.roughObj){
+          
+        if(shape.shapeName === "arrow"){
+          const { arrowline,arrowhead1, arrowhead2} = shape.roughObj
           roughCanvas.draw(arrowline)
           roughCanvas.draw(arrowhead1)
           roughCanvas.draw(arrowhead2)
-        }else{
-          roughCanvas.draw(shape.roughObj)
-      }}}) 
+        }else {
+           roughCanvas.draw(shape.roughObj)
+        }}
+    
+        if(shape.shapeName === "pencil"){
+          createPencil(shape.points, context)
+        }})
 
-
-      
     
      
       context.restore();
 
-         const {id, x1, y1, x2, y2, shapeName} = seletedShape
+     if(seletedShape.shapeName !== "pencil"){
+          const {id, x1, y1, x2, y2, shapeName} = seletedShape
    
       const dx = (mousePos.x - offset?.x) - (initialPos.x - offset?.x)
       const dy = (mousePos.y - offset?.y) - (initialPos.y - offset?.y)       
@@ -87,11 +90,25 @@ export default function Selector({canvasRef, contextRef}) {
         y2 + dy , 
         shapeName
       )  
-       
-      // createRectangle(context, mousePos, initialPos, seletedShape)
 
       updateShape({id ,...element})
      
+     }else {
+         
+      console.log(seletedShape)
+      const {id, shapeName, points} = seletedShape
+   
+
+      const dx = (mousePos.x - offset?.x) - (initialPos.x - offset?.x)
+      const dy = (mousePos.y - offset?.y) - (initialPos.y - offset?.y)      
+      const pointsArray = points.map((point) => ({x:point.x + dx , y:point.y+dy}))
+ 
+      updateShape({id, shapeName, points: pointsArray})
+     }
+       
+      // createRectangle(context, mousePos, initialPos, seletedShape)
+
+   
   
      
      }

@@ -3,7 +3,7 @@ import getMousePos from '../../utils/getMousePos.utils'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
 import rough from "roughjs"
-
+import { createPencil } from '../../utils/pencil.utils';
 
 export default function Panning({canvasRef, contextRef}) {
  
@@ -52,20 +52,23 @@ export default function Panning({canvasRef, contextRef}) {
         context.save();
         context.translate(offsetX, offsetY); 
 
-         shapesData.forEach((shape) => {
-
+        
+      shapesData.forEach((shape) =>{
            if(shape.roughObj){
-              const {arrowline, arrowhead1, arrowhead2} = shape.roughObj
-        if(arrowline && arrowhead1 && arrowhead2){
+          
+        if(shape.shapeName === "arrow"){
+          const { arrowline,arrowhead1, arrowhead2} = shape.roughObj
           roughCanvas.draw(arrowline)
           roughCanvas.draw(arrowhead1)
           roughCanvas.draw(arrowhead2)
-        }else{
-          roughCanvas.draw(shape.roughObj)
-        }
-           }
-       }) 
- 
+        }else {
+           roughCanvas.draw(shape.roughObj)
+        }}
+    
+        if(shape.shapeName === "pencil"){
+          createPencil(shape.points, context)
+        }})
+
 
         context.restore();
    
