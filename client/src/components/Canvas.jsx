@@ -3,86 +3,104 @@ import SelectTool from './SelectTool.jsx';
 import GetTool from './GetTool.jsx';
 import rough from 'roughjs';
 import useToolStore from '../stores/toolStore.js';
+import Zoom from './Zoom.jsx';
+import { createPencil } from '../utils/pencil.utils.js';
 import useShapeStore from '../stores/shapeStore.js';
-import renderAllShapes from '../utils/renderAllShapes.utils.js';
+import useScalingStore from '../stores/scalingStore.js';
 import usePanningStore from '../stores/panningStore.js';
+import UndoAndRedo from './UndoAndRedo.jsx';
 
 
 const Canvas = () => {
   const canvasRef = useRef(null)
   const contextRef = useRef(null)
-  const roughCanvasRef = useRef(null) 
   const [canvasSetUp, setCanvasSetUp] = useState(false)
+  const tool = useToolStore((state) => state.tool)
+  const shapesData = useShapeStore(state => state.shapesData)
+  const scale = useScalingStore(state => state.scale)
+  const offset = usePanningStore(state => state.offset)
+  const scaleOffset = useScalingStore(state =>  state.scaleOffset)
 
-
- 
   useLayoutEffect(() => {
 
     const canvas = canvasRef.current;
     if(!canvas) return
 
-
-    canvas.style.width = `${window.innerWidth}px `;
-    canvas.style.height = `${window.innerHeight}px`;
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
     const context = canvas.getContext("2d")
-
-    context.lineCap = "round";
-    context.strokeStyle = "black";
-    context.lineWidth = "2";
     contextRef.current = context
    
-
-    roughCanvasRef.current = rough.canvas(canvas)
     setCanvasSetUp(true)
   
   }, [])
 
 
-   
-  // useLayoutEffect(() => {
+  useEffect(() => {
+        
+    const canvas = canvasRef.current
+    if(tool === "panning") {
+        canvas.style.cursor = "grab"
+    }else if (tool === "eraser") {
+       canvas.style.cursor = "alias"
+    }else if(tool === "selector"){
+        canvas.style.cursor = "pointer"
+    }else{
+      canvas.style.cursor = "crosshair"
+    }
 
-  //   const canvas = canvasRef.current
-  //   const context = contextRef.current
-  //   const roughCanvas = roughCanvasRef.current
+  }, [tool])
 
-  //   if(!canvas || !context || !roughCanvas) return
+  useEffect(() => {
 
-  //   context.clearRect(0, 0, canvas.width, canvas.height)
+    const canvas = canvasRef.current
+    const context = contextRef.current
+    const roughCanvas = rough.canvas(canvas)
 
-  //   context.save()
-  //   context.translate(offset?.x, offset?.y)
-  //   if(shapesData){
-  //   shapesData.forEach((shape) => {
-  //     if(shape.roughObj){
-  //         roughCanvas.draw(shape.roughObj)
-  //     }
-  //    })
-  //   }
-  //   context.restore()
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.save();
+    context.translate(offset?.x * scale - scaleOffset.x, offset?.y * scale - scaleOffset.y);
 
-  // } ,[])
+    context.scale(scale, scale);
+    shapesData.forEach((shape) => {
+      if (shape.roughObj) {
+        if (shape.shapeName === "arrow") {
+          const { arrowline, arrowhead1, arrowhead2 } = shape.roughObj;
+          roughCanvas.draw(arrowline);
+          roughCanvas.draw(arrowhead1);
+          roughCanvas.draw(arrowhead2);
+        } else {
+          roughCanvas.draw(shape.roughObj);
+        }
+      }
+
+      if (shape.shapeName === "pencil") {
+        createPencil(shape.points, context);
+      }
+    });
+
+  
+    context.restore();
+
+  } ,[offset, scale, shapesData, scaleOffset])
 
 
 
   return (
-    <div className="relative h-screen flex justify-center items-center">
+    <div className="relative h-screen flex justify-center items-center ">
       <SelectTool/>
       <canvas
         ref={canvasRef}
-        className={`bg-white  border-gray-300  border-2`}
+        className={`bg-white border-gray-300`}
       />
-      {/* <button 
-      className="absolute border-2 w-30 h-12 rounded-2xl bg-amber-400
-      text-amber-50 font-medium bottom-8 left-15 hover:cursor-pointer"
-      type="button"
-    
-      >
-      undo
-      </button> */}
-      {canvasSetUp &&(<GetTool canvasRef={canvasRef} roughCanvasRef={roughCanvasRef} contextRef={contextRef}/>)}
+       
+      <UndoAndRedo/>
+
+      
+      <Zoom canvasRef={canvasRef}></Zoom>
+
+      {canvasSetUp &&(<GetTool canvasRef={canvasRef}  contextRef={contextRef}/>)}
     </div>
   );
 };

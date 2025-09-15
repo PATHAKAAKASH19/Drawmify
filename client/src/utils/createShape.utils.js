@@ -4,31 +4,35 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
 
       const generator = rough.generator()
 
+      
+      let propertyObj = {
+            stroke:"#bbd0ff",
+            fill:"#c8b6ff",
+            fillStyle:"zigzag",
+            ...optionObj
+      }
+      
       let roughObj
       switch(shapeName) {
         
         case "rectangle":
-              roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1, optionObj);
+              roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1, propertyObj);
               break;
 
         case "diamond":
-              roughObj = createDiamond(x1, y1, x2, y2, generator)
+              roughObj = createDiamond(x1, y1, x2, y2, propertyObj, generator)
               break;
 
         case "ellipse": 
-               roughObj = generator.ellipse(x1, y1, x2 - x1, y2 - y1, optionObj);
+               roughObj = generator.ellipse(x1, y1, x2 - x1, y2 - y1, propertyObj);
                break;
 
         case "line":
-               roughObj = generator.line(x1, y1, x2, y2) 
+               roughObj = generator.line(x1, y1, x2, y2, propertyObj) 
                break;
 
         case "arrow": 
-              roughObj = createArrow(x1, y1, x2, y2, generator)
-              break;
-
-        case "pencil":
-              roughObj;
+              roughObj = createArrow(x1, y1, x2, y2, propertyObj, generator)
               break;
 
         case "image":
@@ -39,12 +43,12 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
              return     
       }
     
-      return {x1, y1, x2, y2, shapeName,roughObj}
+      return {x1, y1, x2, y2, shapeName, roughObj}
 
 }
 
 
-const createDiamond = (x1, y1, x2, y2, generator) => {
+const createDiamond = (x1, y1, x2, y2, propertyObj, generator) => {
       let height = (y2 -y1)
       let width = (x2 - x1)
 
@@ -55,27 +59,27 @@ const createDiamond = (x1, y1, x2, y2, generator) => {
             [x1 - width, y1]
       ]
 
-      return generator.polygon(diamond)
+      return generator.polygon(diamond, propertyObj)
 }
 
-const createArrow = (x1, y1, x2, y2, generator) => {
-            const arrowline = generator.line(x1, y1, x2, y2)
-              const angle = Math.atan2(y2 - y1, x2 - x1);
+const createArrow = (x1, y1, x2, y2, propertyObj, generator) => {
+            const arrowline = generator.line(x1, y1, x2, y2, propertyObj)
+            const angle = Math.atan2(y2 - y1, x2 - x1);
            
-              const headLength = 10;
+            const headLength = 10;
 
-              const arrowPoint1 = [
+            const arrowPoint1 = [
                  x2 - headLength * Math.cos(angle - Math.PI / 6),
                  y2 - headLength * Math.sin(angle - Math.PI / 6)
-               ];
+            ];
     
-              const arrowPoint2 = [
+            const arrowPoint2 = [
                 x2 -  headLength * Math.cos(angle + Math.PI / 6),
                 y2 - headLength * Math.sin(angle + Math.PI / 6)
-              ];
+            ];
 
-            const arrowhead1 = generator.line(x2, y2, arrowPoint1[0], arrowPoint1[1])
-            const arrowhead2 = generator.line(x2, y2, arrowPoint2[0], arrowPoint2[1])
+            const arrowhead1 = generator.line(x2, y2, arrowPoint1[0], arrowPoint1[1], propertyObj)
+            const arrowhead2 = generator.line(x2, y2, arrowPoint2[0], arrowPoint2[1], propertyObj)
 
             return {arrowline, arrowhead1, arrowhead2}
 }

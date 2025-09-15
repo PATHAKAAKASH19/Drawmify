@@ -29,15 +29,6 @@ export default function Arrow({canvasRef, contextRef}) {
      const startDrawing = (e) => {
         e.preventDefault()
         const mousePos = getMousePos(canvas, e)
-        element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "arrow")
-        const {arrowline, arrowhead1, arrowhead2} = element.roughObj
-        if(arrowline && arrowhead1 && arrowhead2){
-          roughCanvas.draw(arrowline)
-          roughCanvas.draw(arrowhead1)
-          roughCanvas.draw(arrowhead2)
-        }
-    
-      
         setInitialPos(mousePos)
         setIsDrawing(true)
       }
@@ -91,6 +82,7 @@ export default function Arrow({canvasRef, contextRef}) {
        e.preventDefault()  
        addShapes(element)
        setIsDrawing(false)
+       setInitialPos(null)
      }
 
      // handle mouse event

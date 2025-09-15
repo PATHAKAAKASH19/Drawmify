@@ -22,28 +22,13 @@ export default function Text({canvasRef, contextRef}) {
       
       context.font = "normal 25px sans-serif";
      
-      context.textBaseline = "top";
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      context.save();
-      context.translate(offset?.x, offset?.y); 
-      renderAllShapes(context, shapesData)
-      context.restore();
-      context.fillText(text, pos?.x, pos?.y+8)
-      if(text && pos && offset){
-        
-        const initialPos = {
-          x : pos?.x - offset?.x,
-          y : pos?.y - offset?.y+8
-        }
-        
-      addShapes({shapeName:"text", initialPos, text})
-      }else if (text && pos) {
-          const initialPos = {
-          x : pos?.x,
-          y : pos?.y+8
-        }
-        addShapes({shapeName:"text", initialPos, text})
-      }
+      context.textBaseline = "alphabetic";
+   
+   
+   
+    
+      context.fillText(text, pos?.x+5, pos?.y+28)
+
 
       
  }

@@ -27,8 +27,6 @@ export default function Ellipse({canvasRef, contextRef}) {
   const startDrawing = (e) =>{
     e.preventDefault() 
     const mousePos = getMousePos(canvas, e)
-    element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "ellipse")
-    roughCanvas.draw(element.roughObj)
     setInitialPos(mousePos)
     setIsDrawing(true)
   }

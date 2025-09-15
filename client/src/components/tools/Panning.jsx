@@ -21,7 +21,7 @@ export default function Panning({canvasRef, contextRef}) {
     const context = contextRef.current
     const roughCanvas = rough.canvas(canvas)
     let offsetObj = null
-
+    
    
     if(!canvas || !context) return
    
@@ -32,6 +32,7 @@ export default function Panning({canvasRef, contextRef}) {
        const startY = mousePos?.y - offset?.y
        setStart({x:startX, y:startY})
        setIsPanning(true)
+       e.target.style.cursor = "grabbing"
     }
 
     const panning = (e) => {
@@ -81,6 +82,8 @@ export default function Panning({canvasRef, contextRef}) {
        if(offsetObj !== null){
          addOffset({x:offsetObj?.x,y:offsetObj?.y })
        }
+
+       e.target.style.cursor = "grab"
     }
 
 

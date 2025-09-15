@@ -28,8 +28,6 @@ export default function Line({canvasRef, contextRef}) {
     const startDrawing = (e) => {
       e.preventDefault()    
       const mousePos = getMousePos(canvas, e)
-      element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "line")  
-      roughCanvas.draw(element.roughObj)         
       setInitialPos(mousePos)
       setIsDrawing(true)
     }

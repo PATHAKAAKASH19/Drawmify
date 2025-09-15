@@ -28,7 +28,6 @@ export default function Eraser({canvasRef, contextRef}) {
       e.preventDefault()
       const mousePos = getMousePos(canvas, e)
       const shape = checkShapeCollision(mousePos.x - offset?.x, mousePos.y - offset?.y, shapesData);
-
       if (shape) removeShape(shape.id);
       setIsEraser(true)
     }

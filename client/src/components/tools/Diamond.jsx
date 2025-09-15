@@ -28,8 +28,6 @@ export default function Diamond({canvasRef, contextRef}) {
     const startDrawing = (e) => {
       e.preventDefault()  
       const mousePos = getMousePos(canvas, e)
-      element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "diamond")
-      roughCanvas.draw(element.roughObj)
       setInitialPos(mousePos)
       setIsDrawing(true)
     }

@@ -5,6 +5,7 @@ import usePanningStore from "../../stores/panningStore";
 import createShape from "../../utils/createShape.utils";
 import rough from "roughjs"
 import { createPencil } from '../../utils/pencil.utils';
+import useScalingStore from "../../stores/scalingStore";
 
 
 export default function Rectangle({ canvasRef, contextRef }) {
@@ -12,9 +13,12 @@ export default function Rectangle({ canvasRef, contextRef }) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [initialPos, setInitialPos]  = useState(null) 
 
+
   const addShapes = useShapeStore((state) => state.addShapes)
   const shapesData = useShapeStore((state) => state.shapesData)
-  const  offset  = usePanningStore((state) =>  state.offset)
+  const offset = usePanningStore((state) => state.offset)
+  const scale = useScalingStore(state => state.scale)
+  const scaleOffset = useScalingStore((state) => state.scaleOffset);
 
 
   useEffect(() => {
@@ -28,8 +32,6 @@ export default function Rectangle({ canvasRef, contextRef }) {
     const startDrawing = (e) => {
       e.preventDefault() 
       const mousePos = getMousePos(canvas, e);
-      element = createShape(mousePos.x, mousePos.y, mousePos.x, mousePos.y, "rectangle")
-      roughCanvas.draw(element.roughObj)
       setInitialPos(mousePos);
       setIsDrawing(true);
     };
@@ -45,9 +47,9 @@ export default function Rectangle({ canvasRef, contextRef }) {
       context.save()
       context.translate(offset?.x, offset?.y)
      
-      
+      context.scale(scale, scale)
       shapesData.forEach((shape) =>{
-           if(shape.roughObj){
+        if(shape.roughObj){
           
         if(shape.shapeName === "arrow"){
           const { arrowline,arrowhead1, arrowhead2} = shape.roughObj
@@ -67,10 +69,9 @@ export default function Rectangle({ canvasRef, contextRef }) {
         initialPos.y -offset.y,
         mousePos.x -  offset.x,
         mousePos.y - offset.y,
-        "rectangle"
+        "rectangle",
       )
 
-   
       roughCanvas.draw(element.roughObj)
       context.restore()
     };
@@ -98,7 +99,7 @@ export default function Rectangle({ canvasRef, contextRef }) {
       canvas.removeEventListener("touchmove", draw, {passive: false})
       canvas.removeEventListener("touchend", finishDrawing)
     };
-  }, [canvasRef, contextRef, isDrawing, offset,initialPos,addShapes, shapesData]);
+  }, [canvasRef, contextRef, isDrawing, offset,initialPos,addShapes, shapesData, scale]);
 
   return null;
 }
