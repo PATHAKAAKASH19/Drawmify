@@ -5,6 +5,7 @@ import usePanningStore from '../../stores/panningStore';
 import rough from "roughjs"
 import createShape from '../../utils/createShape.utils';
 import { createPencil } from '../../utils/pencil.utils';
+import useScalingStore from '../../stores/scalingStore';
 
 
 export default function Arrow({canvasRef, contextRef}) {
@@ -15,7 +16,8 @@ export default function Arrow({canvasRef, contextRef}) {
   const addShapes = useShapeStore((state) => state.addShapes)
   const shapesData = useShapeStore((state) => state.shapesData)
   const  offset  = usePanningStore((state) =>  state.offset)
-
+   const scale = useScalingStore((state) => state.scale);
+   const scaleOffset = useScalingStore((state) => state.scaleOffset);
 
   useEffect(() => {
 
@@ -40,10 +42,13 @@ export default function Arrow({canvasRef, contextRef}) {
         const mousePos = getMousePos(canvas, e)
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.save();
-        context.translate(offset?.x, offset?.y); 
-        
-       
-      shapesData.forEach((shape) =>{
+        context.translate(
+          offset?.x * scale - scaleOffset.x,
+          offset?.y * scale - scaleOffset.y
+        );
+
+        context.scale(scale, scale);
+         shapesData.forEach((shape) =>{
            if(shape.roughObj){
           
         if(shape.shapeName === "arrow"){
@@ -60,10 +65,10 @@ export default function Arrow({canvasRef, contextRef}) {
         }})
 
       element = createShape(
-        initialPos.x -offset.x, 
-        initialPos.y -offset.y,
-        mousePos.x -  offset.x,
-        mousePos.y - offset.y,
+        (initialPos.x -offset.x * scale +scaleOffset.x)/ scale, 
+        (initialPos.y -offset.y * scale +scaleOffset.y)/ scale,
+        (mousePos.x -  offset.x * scale +scaleOffset.x)/ scale,
+       ( mousePos.y - offset.y * scale +scaleOffset.y)/ scale,
         "arrow"
       )
 

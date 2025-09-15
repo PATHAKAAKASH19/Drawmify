@@ -17,8 +17,8 @@ const Canvas = () => {
   const [canvasSetUp, setCanvasSetUp] = useState(false)
   const tool = useToolStore((state) => state.tool)
   const shapesData = useShapeStore(state => state.shapesData)
-  const scale = useScalingStore(state => state.scale)
   const offset = usePanningStore(state => state.offset)
+  const scale = useScalingStore(state => state.scale)
   const scaleOffset = useScalingStore(state =>  state.scaleOffset)
 
   useLayoutEffect(() => {

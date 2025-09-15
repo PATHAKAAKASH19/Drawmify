@@ -25,7 +25,7 @@ export default function Selector({canvasRef, contextRef}) {
      const canvas = canvasRef.current
      const context = contextRef.current
      const roughCanvas = rough.canvas(canvas)
-   
+     let shapeObj
      if(!canvas || !context) return
 
 
@@ -50,15 +50,13 @@ export default function Selector({canvasRef, contextRef}) {
       
       const mousePos = getMousePos(canvas, e)
    
-   
-
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();
       context.translate(offset?.x, offset?.y); 
 
   
       shapesData.forEach((shape) =>{
-           if(shape.roughObj){
+           if(shape.roughObj && shape.id !== seletedShape.id){
           
         if(shape.shapeName === "arrow"){
           const { arrowline,arrowhead1, arrowhead2} = shape.roughObj
@@ -69,14 +67,12 @@ export default function Selector({canvasRef, contextRef}) {
            roughCanvas.draw(shape.roughObj)
         }}
     
-        if(shape.shapeName === "pencil"){
-          createPencil(shape.points, context)
+        if (shape.shapeName === "pencil" && shape.id !== seletedShape.id) {
+          createPencil(shape.points, context);
         }})
 
-    
-     
-      context.restore();
 
+       
      if(seletedShape.shapeName !== "pencil"){
           const {id, x1, y1, x2, y2, shapeName} = seletedShape
    
@@ -91,32 +87,31 @@ export default function Selector({canvasRef, contextRef}) {
         shapeName
       )  
 
-      updateShape({id ,...element})
-     
-     }else {
+      roughCanvas.draw(element.roughObj) 
+      shapeObj = {id, ...element}
+
+     } else {
          
-      console.log(seletedShape)
       const {id, shapeName, points} = seletedShape
    
-
       const dx = (mousePos.x - offset?.x) - (initialPos.x - offset?.x)
       const dy = (mousePos.y - offset?.y) - (initialPos.y - offset?.y)      
       const pointsArray = points.map((point) => ({x:point.x + dx , y:point.y+dy}))
- 
-      updateShape({id, shapeName, points: pointsArray})
+     
+      createPencil(pointsArray, context);
+      shapeObj = { id, shapeName, points: pointsArray };
      }
        
       // createRectangle(context, mousePos, initialPos, seletedShape)
 
-   
-  
-     
-     }
+      context.restore();
+    }
 
      const finishDrawing = (e) => {
       e.preventDefault()   
       setIsSelected(false)
       setSelectedShape(null)
+      updateShape(shapeObj);
       e.target.style.cursor = "default"
      }
 
