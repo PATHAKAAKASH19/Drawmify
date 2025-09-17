@@ -4,13 +4,11 @@ import useScalingStore from '../stores/scalingStore'
 export default function Zoom({canvasRef}) {
 
     const [scale, setScale] = useState(1)
- 
     const changeScaling = useScalingStore(state =>  state.changeScaling) 
   
     const onZoom = (delta) => {
        setScale((prev) => Math.min(Math.max(prev + delta, 0.1), 20))
     }
-
 
     useEffect(() => {
 

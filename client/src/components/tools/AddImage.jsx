@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react'
 import getMousePos from '../../utils/getMousePos.utils'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
-import renderAllShapes from '../../utils/renderAllShapes.utils'
 import useToolStore from '../../stores/toolStore'
 
 export default function AddImage({canvasRef, contextRef}) {
@@ -75,10 +74,10 @@ useEffect(() => {
       if(!isDrawing || !img) return
 
       const mousePos = getMousePos(canvas, e)
+      const width = mousePos.x - initialPos.x;
+      const height = mousePos.y - initialPos.y;     
+      
       context.clearRect(0, 0, canvas.width, canvas.height);
-      const width = mousePos.x - initialPos.x
-      const height = mousePos.y - initialPos.y
-
       context.save();
       context.translate(offset?.x, offset?.y)
      

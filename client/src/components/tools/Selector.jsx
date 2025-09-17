@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect,  useState } from 'react'
 import getMousePos from '../../utils/getMousePos.utils'
 import checkShapeCollision from '../../utils/checkShapeCollision.utils'
 import useShapeStore from '../../stores/shapeStore'
@@ -6,6 +6,7 @@ import usePanningStore from '../../stores/panningStore'
 import createShape from '../../utils/createShape.utils'
 import rough from "roughjs"
 import { createPencil } from '../../utils/pencil.utils';
+import useScalingStore from "../../stores/scalingStore";
 
 export default function Selector({canvasRef, contextRef}) {
 
@@ -17,7 +18,8 @@ export default function Selector({canvasRef, contextRef}) {
    const shapesData = useShapeStore(state =>  state.shapesData)
    const  offset  = usePanningStore((state) =>  state.offset)
    const updateShape = useShapeStore(state =>  state.updateShape)
- 
+   const scale = useScalingStore((state) => state.scale);
+   const scaleOffset = useScalingStore((state) => state.scaleOffset);
     
     
    useEffect(() => {
@@ -32,7 +34,11 @@ export default function Selector({canvasRef, contextRef}) {
      const startDrawing = (e) => {
         e.preventDefault()
         const mousePos = getMousePos(canvas, e)
-        const element = checkShapeCollision(mousePos.x- offset.x, mousePos.y - offset.y , shapesData)
+        const element = checkShapeCollision(
+          (mousePos.x - offset?.x * scale + scaleOffset.x) / scale,
+          (mousePos.y - offset?.y * scale + scaleOffset.y) / scale,
+          shapesData
+        );
        
         if(element){
           setSelectedShape(element)
@@ -52,8 +58,8 @@ export default function Selector({canvasRef, contextRef}) {
    
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();
-      context.translate(offset?.x, offset?.y); 
-
+      context.translate(offset?.x * scale - scaleOffset.x, offset?.y * scale - scaleOffset.y); 
+      context.scale(scale, scale)
   
       shapesData.forEach((shape) =>{
            if(shape.roughObj && shape.id !== seletedShape.id){
@@ -72,13 +78,15 @@ export default function Selector({canvasRef, contextRef}) {
         }})
 
 
+       const dx = ((mousePos.x - offset?.x * scale + scaleOffset.x) / scale) -
+                  ((initialPos.x - offset?.x * scale + scaleOffset.x) / scale)
+       
+       const dy = ((mousePos.y - offset?.y * scale + scaleOffset.y) / scale) -
+                  ((initialPos.y - offset?.y * scale + scaleOffset.y) / scale)
        
      if(seletedShape.shapeName !== "pencil"){
-          const {id, x1, y1, x2, y2, shapeName} = seletedShape
+      const {id, x1, y1, x2, y2, shapeName} = seletedShape
    
-      const dx = (mousePos.x - offset?.x) - (initialPos.x - offset?.x)
-      const dy = (mousePos.y - offset?.y) - (initialPos.y - offset?.y)       
-     
       const element = createShape(
         x1 + dx ,
         y1 + dy , 
@@ -87,23 +95,27 @@ export default function Selector({canvasRef, contextRef}) {
         shapeName
       )  
 
-      roughCanvas.draw(element.roughObj) 
+       if (element.shapeName === "arrow") {
+            const { arrowline, arrowhead1, arrowhead2 } = element.roughObj;
+            roughCanvas.draw(arrowline);
+            roughCanvas.draw(arrowhead1);
+            roughCanvas.draw(arrowhead2);
+        
+       } else {
+           roughCanvas.draw(element.roughObj); 
+      }
+    
       shapeObj = {id, ...element}
-
+     
      } else {
          
       const {id, shapeName, points} = seletedShape
-   
-      const dx = (mousePos.x - offset?.x) - (initialPos.x - offset?.x)
-      const dy = (mousePos.y - offset?.y) - (initialPos.y - offset?.y)      
       const pointsArray = points.map((point) => ({x:point.x + dx , y:point.y+dy}))
-     
       createPencil(pointsArray, context);
       shapeObj = { id, shapeName, points: pointsArray };
      }
        
       // createRectangle(context, mousePos, initialPos, seletedShape)
-
       context.restore();
     }
 
@@ -137,7 +149,7 @@ export default function Selector({canvasRef, contextRef}) {
     }
 
 
-   }, [canvasRef, contextRef,offset,seletedShape, updateShape,shapesData,isSelected, initialPos])
+   }, [canvasRef, contextRef,offset,seletedShape, updateShape,shapesData,isSelected, initialPos,scale, scaleOffset])
 
 
   return null

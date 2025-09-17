@@ -5,6 +5,7 @@ import usePanningStore from '../../stores/panningStore';
 import checkShapeCollision from '../../utils/checkShapeCollision.utils';
 import rough from "roughjs"
 import { createPencil } from '../../utils/pencil.utils';
+import useScalingStore from "../../stores/scalingStore";
 
 export default function Eraser({canvasRef, contextRef}) {
 
@@ -12,8 +13,9 @@ export default function Eraser({canvasRef, contextRef}) {
 
   const shapesData = useShapeStore((state) => state.shapesData)
   const removeShape = useShapeStore((state) => state.removeShape)
-  const offset  = usePanningStore((state) =>  state.offset)
-
+  const offset = usePanningStore((state) => state.offset)
+  const scale = useScalingStore((state) => state.scale);
+  const scaleOffset = useScalingStore((state) => state.scaleOffset);
   useEffect(() => {
     
   const canvas = canvasRef.current
@@ -27,7 +29,11 @@ export default function Eraser({canvasRef, contextRef}) {
       
       e.preventDefault()
       const mousePos = getMousePos(canvas, e)
-      const shape = checkShapeCollision(mousePos.x - offset?.x, mousePos.y - offset?.y, shapesData);
+      const shape = checkShapeCollision(
+        (mousePos.x - offset?.x * scale + scaleOffset.x) / scale,
+        (mousePos.y - offset?.y  * scale + scaleOffset.y) / scale,
+        shapesData
+      );
       if (shape) removeShape(shape.id);
       setIsEraser(true)
     }
@@ -38,30 +44,39 @@ export default function Eraser({canvasRef, contextRef}) {
       if(!isEraser) return
 
       const mousePos = getMousePos(canvas, e)
-      const shape = checkShapeCollision(mousePos.x - offset?.x, mousePos.y - offset?.y, shapesData);
+      const shape = checkShapeCollision(
+        (mousePos.x - offset?.x  * scale + scaleOffset.x) / scale,
+        (mousePos.y - offset?.y  * scale + scaleOffset.y) / scale,
+        shapesData
+      );
     
       if(shape) removeShape(shape.id);
     
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.save();
-      context.translate(offset?.x, offset?.y);
-    
-      shapesData.forEach((shape) =>{
-           if(shape.roughObj){
-          
-        if(shape.shapeName === "arrow"){
-          const { arrowline,arrowhead1, arrowhead2} = shape.roughObj
-          roughCanvas.draw(arrowline)
-          roughCanvas.draw(arrowhead1)
-          roughCanvas.draw(arrowhead2)
-        }else {
-           roughCanvas.draw(shape.roughObj)
-        }}
-    
-        if(shape.shapeName === "pencil"){
-          createPencil(shape.points, context)
-        }})
+      context.translate(
+        offset?.x * scale - scaleOffset.x,
+        offset?.y * scale - scaleOffset.y
+      );
+      context.scale(scale, scale);
+      shapesData.forEach((shape) => {
+        if (shape.roughObj) {
+          if (shape.shapeName === "arrow") {
+            const { arrowline, arrowhead1, arrowhead2 } = shape.roughObj;
+            roughCanvas.draw(arrowline);
+            roughCanvas.draw(arrowhead1);
+            roughCanvas.draw(arrowhead2);
+          } else {
+            roughCanvas.draw(shape.roughObj);
+          }
+        }
 
+        if (shape.shapeName === "pencil") {
+          createPencil(shape.points, context);
+        }
+      });
+
+    
       context.restore();
     }
 
@@ -88,6 +103,6 @@ export default function Eraser({canvasRef, contextRef}) {
      canvas.removeEventListener("touchend", startEraser)
     }
 
-  }, [canvasRef, contextRef,isEraser,shapesData,removeShape,offset])
+  }, [canvasRef, contextRef,isEraser,shapesData,removeShape,offset,scale, scaleOffset])
   return null
 }

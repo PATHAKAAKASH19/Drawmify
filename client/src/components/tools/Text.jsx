@@ -24,8 +24,6 @@ export default function Text({canvasRef, contextRef}) {
      
       context.textBaseline = "alphabetic";
    
-   
-   
     
       context.fillText(text, pos?.x+5, pos?.y+28)
 

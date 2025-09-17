@@ -4,6 +4,7 @@ import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
 import rough from "roughjs"
 import { createPencil } from '../../utils/pencil.utils';
+import useScalingStore from "../../stores/scalingStore";
 
 export default function Panning({canvasRef, contextRef}) {
  
@@ -12,7 +13,9 @@ export default function Panning({canvasRef, contextRef}) {
  
   const shapesData = useShapeStore((state) => state.shapesData)
   const addOffset = usePanningStore((state) =>  state.addOffset)
-  const  offset  = usePanningStore((state) =>  state.offset)
+  const offset = usePanningStore((state) => state.offset)
+  const scale = useScalingStore((state) => state.scale);
+  const scaleOffset = useScalingStore((state) => state.scaleOffset);
 
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function Panning({canvasRef, contextRef}) {
        e.preventDefault()  
        const mousePos = getMousePos(canvas,e)
        const startX = mousePos?.x - offset?.x
-       const startY = mousePos?.y - offset?.y
+       const startY = mousePos?.y - offset?.y 
        setStart({x:startX, y:startY})
        setIsPanning(true)
        e.target.style.cursor = "grabbing"
@@ -41,8 +44,10 @@ export default function Panning({canvasRef, contextRef}) {
        if(!isPanning) return
 
         const mousePos = getMousePos(canvas,e)
-        const offsetX = mousePos?.x - start?.x
-        const offsetY = mousePos?.y - start?.y
+        const offsetX =
+          (mousePos?.x * scale + scaleOffset.x)/scale   - (start?.x * scale + scaleOffset.x) / scale;
+        const offsetY =
+          (mousePos?.y * scale + scaleOffset.y)/scale - (start?.y * scale + scaleOffset.y) / scale;
        
         offsetObj = {
           x:offsetX,
@@ -51,8 +56,10 @@ export default function Panning({canvasRef, contextRef}) {
 
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.save();
-        context.translate(offsetX, offsetY); 
+        context.translate(offsetX * scale -scaleOffset.x , offsetY * scale - scaleOffset.y); 
 
+      
+       context.scale(scale, scale)
         
       shapesData.forEach((shape) =>{
            if(shape.roughObj){
@@ -105,6 +112,6 @@ export default function Panning({canvasRef, contextRef}) {
       canvas.removeEventListener("touchmove", panning, {passive: false})
       canvas.removeEventListener("touchend", endPanning)
     }
-  }, [canvasRef, contextRef,isPanning,addOffset,offset?.x, offset?.y,start?.x, start?.y, shapesData])
+  }, [canvasRef, contextRef,isPanning,addOffset,offset?.x, offset?.y,start?.x, start?.y, shapesData, scale, scaleOffset])
   return null
 }

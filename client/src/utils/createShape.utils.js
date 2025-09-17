@@ -6,9 +6,11 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
 
       
       let propertyObj = {
+            strokeWidth:4,
             stroke:"#bbd0ff",
             fill:"#c8b6ff",
-            fillStyle:"zigzag",
+            fillStyle: "hachure",
+            bowing:10,
             ...optionObj
       }
       
