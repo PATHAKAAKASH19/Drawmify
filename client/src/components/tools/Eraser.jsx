@@ -1,58 +1,49 @@
-import React, { useEffect, useState } from 'react'
-import useShapeStore from '../../stores/shapeStore';
-import getMousePos from '../../utils/getMousePos.utils';
-import usePanningStore from '../../stores/panningStore';
-import checkShapeCollision from '../../utils/checkShapeCollision.utils';
-import rough from "roughjs"
-import { createPencil } from '../../utils/pencil.utils';
+import React, { useEffect, useState } from "react";
+import useShapeStore from "../../stores/shapeStore";
+import getMousePos from "../../utils/getMousePos.utils";
+import usePanningStore from "../../stores/panningStore";
+import checkShapeCollision from "../../utils/checkShapeCollision.utils";
+import rough from "roughjs";
+import { createPencil } from "../../utils/pencil.utils";
 import useScalingStore from "../../stores/scalingStore";
 
-export default function Eraser({canvasRef, contextRef}) {
+export default function Eraser({ canvasRef, contextRef }) {
+  const [isEraser, setIsEraser] = useState(false);
 
-  const [isEraser, setIsEraser] = useState(false)
-
-  const shapesData = useShapeStore((state) => state.shapesData)
-  const removeShape = useShapeStore((state) => state.removeShape)
-  const offset = usePanningStore((state) => state.offset)
+  const shapesData = useShapeStore((state) => state.shapesData);
+  const removeShape = useShapeStore((state) => state.removeShape);
+  const offset = usePanningStore((state) => state.offset);
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
+
   useEffect(() => {
-    
-  const canvas = canvasRef.current
-  const context = contextRef.current
-  const roughCanvas = rough.canvas(canvas)
+    const canvas = canvasRef.current;
+    const context = contextRef.current;
+    const roughCanvas = rough.canvas(canvas);
 
-  if(!canvas || !context) return
-
+    if (!canvas || !context) return;
 
     const startEraser = (e) => {
-      
-      e.preventDefault()
-      const mousePos = getMousePos(canvas, e)
-      const shape = checkShapeCollision(
-        (mousePos.x - offset?.x * scale + scaleOffset.x) / scale,
-        (mousePos.y - offset?.y  * scale + scaleOffset.y) / scale,
-        shapesData
-      );
+     
+      e.preventDefault();
+      const mousePos = getMousePos(canvas, e, offset, scale, scaleOffset);
+      const shape = checkShapeCollision(mousePos.x, mousePos.y, shapesData);
+
       if (shape) removeShape(shape.id);
-      setIsEraser(true)
-    }
+      setIsEraser(true);
+    };
 
     const moveEraser = (e) => {
-    
-      e.preventDefault()
-      if(!isEraser) return
+      
+      e.preventDefault();
+      if (!isEraser) return;
 
-      const mousePos = getMousePos(canvas, e)
-      const shape = checkShapeCollision(
-        (mousePos.x - offset?.x  * scale + scaleOffset.x) / scale,
-        (mousePos.y - offset?.y  * scale + scaleOffset.y) / scale,
-        shapesData
-      );
-    
-      if(shape) removeShape(shape.id);
-    
-      context.clearRect(0, 0, canvas.width, canvas.height)
+      const mousePos = getMousePos(canvas, e, offset, scale, scaleOffset);
+      const shape = checkShapeCollision(mousePos.x, mousePos.y, shapesData);
+
+      if (shape) removeShape(shape.id);
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
       context.save();
       context.translate(
         offset?.x * scale - scaleOffset.x,
@@ -76,33 +67,40 @@ export default function Eraser({canvasRef, contextRef}) {
         }
       });
 
-    
       context.restore();
-    }
+    };
 
     const stopEraser = (e) => {
-       e.preventDefault()
-       setIsEraser(false)
-    }
+      e.preventDefault();
+      setIsEraser(false);
+    };
 
-    canvas.addEventListener("mousedown" , startEraser)
-    canvas.addEventListener("mousemove", moveEraser)
-    canvas.addEventListener("mouseup" , stopEraser)
+    canvas.addEventListener("mousedown", startEraser);
+    canvas.addEventListener("mousemove", moveEraser);
+    canvas.addEventListener("mouseup", stopEraser);
 
-    canvas.addEventListener("touchstart", startEraser)
-    canvas.addEventListener("touchmove", moveEraser, {passive: false})
-    canvas.addEventListener("touchend", startEraser)
+    canvas.addEventListener("touchstart", startEraser);
+    canvas.addEventListener("touchmove", moveEraser, { passive: false });
+    canvas.addEventListener("touchend", startEraser);
 
     return () => {
-     canvas.removeEventListener("mousedown" , startEraser)
-     canvas.removeEventListener("mousemove", moveEraser)
-     canvas.removeEventListener("mouseup" , stopEraser)
+      canvas.removeEventListener("mousedown", startEraser);
+      canvas.removeEventListener("mousemove", moveEraser);
+      canvas.removeEventListener("mouseup", stopEraser);
 
-     canvas.removeEventListener("touchstart", startEraser)
-     canvas.removeEventListener("touchmove", moveEraser, {passive: false})
-     canvas.removeEventListener("touchend", startEraser)
-    }
-
-  }, [canvasRef, contextRef,isEraser,shapesData,removeShape,offset,scale, scaleOffset])
-  return null
+      canvas.removeEventListener("touchstart", startEraser);
+      canvas.removeEventListener("touchmove", moveEraser, { passive: false });
+      canvas.removeEventListener("touchend", startEraser);
+    };
+  }, [
+    canvasRef,
+    contextRef,
+    isEraser,
+    shapesData,
+    removeShape,
+    offset,
+    scale,
+    scaleOffset,
+  ]);
+  return null;
 }

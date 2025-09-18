@@ -6,11 +6,11 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
 
       
       let propertyObj = {
-            strokeWidth:4,
+            strokeWidth:2,
             stroke:"#bbd0ff",
             fill:"#c8b6ff",
             fillStyle: "hachure",
-            bowing:10,
+            bowing:1,
             ...optionObj
       }
       
@@ -68,7 +68,7 @@ const createArrow = (x1, y1, x2, y2, propertyObj, generator) => {
             const arrowline = generator.line(x1, y1, x2, y2, propertyObj)
             const angle = Math.atan2(y2 - y1, x2 - x1);
            
-            const headLength = 10;
+            const headLength = 15;
 
             const arrowPoint1 = [
                  x2 - headLength * Math.cos(angle - Math.PI / 6),

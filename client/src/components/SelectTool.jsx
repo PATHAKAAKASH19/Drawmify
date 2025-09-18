@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { 
   Pencil, Eraser, MoveRight, Circle,  Minus, 
    Diamond,  Image, MousePointer, LockKeyhole, 
@@ -9,14 +9,21 @@ import useToolStore from '../stores/toolStore';
  
 export default function SelectTool() {
 
-  const [selectedTool, setSelectedTool] = useState("rectangle")
+  const [selectedTool, setSelectedTool] = useState("")
   const [lock, setLock] = useState(false)
   const changeTool = useToolStore((state) => state.changeTool)
+  const tool = useToolStore((state) => state.tool )
   
   const handleToolSelection = (name)=>{
         setSelectedTool(name)
         changeTool(name)
   }   
+
+
+  useEffect(() => {
+     
+    setSelectedTool(tool)
+  }, [tool])
    
   const toolsIconArray = [
         {

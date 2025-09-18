@@ -30,7 +30,7 @@ export default function Panning({canvasRef, contextRef}) {
    
     const startPanning = (e) => {
        e.preventDefault()  
-       const mousePos = getMousePos(canvas,e)
+       const mousePos = getMousePos(canvas,e, offset, scale, scaleOffset)
        const startX = mousePos?.x - offset?.x
        const startY = mousePos?.y - offset?.y 
        setStart({x:startX, y:startY})
@@ -43,11 +43,9 @@ export default function Panning({canvasRef, contextRef}) {
        e.preventDefault()  
        if(!isPanning) return
 
-        const mousePos = getMousePos(canvas,e)
-        const offsetX =
-          (mousePos?.x * scale + scaleOffset.x)/scale   - (start?.x * scale + scaleOffset.x) / scale;
-        const offsetY =
-          (mousePos?.y * scale + scaleOffset.y)/scale - (start?.y * scale + scaleOffset.y) / scale;
+        const mousePos = getMousePos(canvas,e, offset, scale, scaleOffset)
+        const offsetX = mousePos?.x - start?.x 
+        const offsetY = mousePos?.y - start?.y 
        
         offsetObj = {
           x:offsetX,
@@ -112,6 +110,6 @@ export default function Panning({canvasRef, contextRef}) {
       canvas.removeEventListener("touchmove", panning, {passive: false})
       canvas.removeEventListener("touchend", endPanning)
     }
-  }, [canvasRef, contextRef,isPanning,addOffset,offset?.x, offset?.y,start?.x, start?.y, shapesData, scale, scaleOffset])
+  }, [canvasRef, contextRef,isPanning,addOffset,start, shapesData, scale, scaleOffset, offset])
   return null
 }
