@@ -19,8 +19,8 @@ const propertyStore = (set) => ({
         
     },
 
-    changeProperties: (propertyObj) => {
-        set((state) => ({ properties: { ...state.properties, propertyObj } }))
+    updateProperties: (propertyObj) => {
+        set((state) => ({ properties: { ...state.properties, ...propertyObj } }))
     }
     
 })

@@ -6,13 +6,18 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
 
       
       let propertyObj = {
-            strokeWidth:2,
-            stroke:"#bbd0ff",
-            fill:"#c8b6ff",
-            fillStyle: "hachure",
-            bowing:1,
-            ...optionObj
-      }
+        stroke: optionObj.currentItemStrokeColor,
+        strokeWidth: 4,
+        fill: optionObj.currentItemBackgroundColor,
+        fillStyle: "cross-hatch",
+        fillWeight: 1,
+        hachureAngle: 30,
+        hachureGap: 8,
+        roughness: 1,
+        bowing: 0,
+        strokeLineDash: [10, 5],
+        simplification:0.9,
+      };
       
       let roughObj
       switch(shapeName) {

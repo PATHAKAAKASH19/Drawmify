@@ -6,6 +6,7 @@ import getMousePos from "../utils/getMousePos.utils";
 import { createPencil } from "../utils/pencil.utils";
 import createShape from "../utils/createShape.utils";
 import rough from "roughjs";
+import usePropertyStore from "../stores/propertyStore";
 
 export default function useShapeTool(canvasRef, contextRef, shapeName) {
 
@@ -18,7 +19,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
   const addShapes = useShapeStore((state) => state.addShapes);
   const offset = usePanningStore((state) => state.offset);
-
+  const properties = usePropertyStore( state =>  state.properties)
     
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -66,7 +67,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
         }
 
         if (shape.shapeName === "pencil") {
-          createPencil(shape.points, context);
+          createPencil(shape.points, context, properties);
         }
 
 
@@ -89,7 +90,8 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
           initialPos.y,
           mousePos.x,
           mousePos.y,
-          shapeName
+          shapeName,
+          properties
         );
         if (shapeName !== "arrow") {
           roughCanvas.draw(shape.roughObj);
@@ -105,7 +107,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
 
         const newPoints = [...points, point];
         setPoints(newPoints);
-        createPencil(newPoints, context);
+        createPencil(newPoints, context, properties);
       }
 
       context.restore();
@@ -155,6 +157,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
     offset,
     shapeName,
     points,
+    properties
   ]);
 
   return null;
