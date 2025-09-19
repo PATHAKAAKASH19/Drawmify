@@ -73,7 +73,20 @@ export default function Panning({canvasRef, contextRef}) {
     
         if(shape.shapeName === "pencil"){
           createPencil(shape.points, context)
-        }})
+        }
+      
+          if (shape.shapeName === "image") {
+            const image = new Image();
+            image.src = shape.img;
+            context.drawImage(
+              image,
+              shape.x1,
+              shape.y1,
+              shape.x2 - shape.x1,
+              shape.y2 - shape.y1
+            );
+          }
+      })
 
 
         context.restore();

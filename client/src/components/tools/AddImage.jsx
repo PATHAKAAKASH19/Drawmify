@@ -1,20 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react'
-import getMousePos from '../../utils/getMousePos.utils'
+import React, { useEffect, useState, useRef , useLayoutEffect} from 'react'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
 import useToolStore from '../../stores/toolStore'
+import useScalingStore from '../../stores/scalingStore'
+import rough from "roughjs"
+import { createPencil } from '../../utils/pencil.utils'
 
 export default function AddImage({canvasRef, contextRef}) {
 
- const [isDrawing, setIsDrawing] = useState(false)
- const [initialPos, setInitialPos] = useState(null)
+ 
  const [img, setImg] = useState(null)
  const inputRef = useRef(null)
  const isInitialMount = useRef(true);
   
  const addShapes = useShapeStore((state) => state.addShapes)
  const shapesData = useShapeStore((state) => state.shapesData)
- const  offset  = usePanningStore((state) =>  state.offset)
+  const offset = usePanningStore((state) => state.offset)
+  const scale = useScalingStore(state => state.scale)
+  const scaleOffset = useScalingStore(state =>  state.scaleOffset)
+
  const  tool = useToolStore((state) => state.tool)
 
 
@@ -51,86 +55,63 @@ useEffect(() => {
 },[tool])
  
 
+  
+  
+  useLayoutEffect(() => {
 
-useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = contextRef.current;
+    const roughCanvas = rough.canvas(canvas)
+ 
 
-    const canvas = canvasRef.current
-    const context = contextRef.current
-    let imgObj 
+    if (!canvas || !context) return;
 
-    if(!canvas || !context) return
+    if (img) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        context.translate(offset?.x * scale -scaleOffset.x, offset?.y* scale - scaleOffset.y);
 
+        context.scale(scale, scale)
+         shapesData.forEach((shape) => {
+           if (shape.roughObj) {
+             if (shape.shapeName === "arrow") {
+               const { arrowline, arrowhead1, arrowhead2 } = shape.roughObj;
+               roughCanvas.draw(arrowline);
+               roughCanvas.draw(arrowhead1);
+               roughCanvas.draw(arrowhead2);
+             } else {
+               roughCanvas.draw(shape.roughObj);
+             }
+           }
 
-    const startImage = (e) => {
-       e.preventDefault()
-       const mousePos = getMousePos(canvas, e)
-       setInitialPos(mousePos)
-       setIsDrawing(true)
-    } 
+           if (shape.shapeName === "pencil") {
+             createPencil(shape.points, context);
+           }
 
-    const image = (e) => {
-
-      e.preventDefault()
-      if(!isDrawing || !img) return
-
-      const mousePos = getMousePos(canvas, e)
-      const width = mousePos.x - initialPos.x;
-      const height = mousePos.y - initialPos.y;     
+           if (shape.shapeName === "image") {
+                const image = new Image();
+                image.src = shape.img;
+                context.drawImage(image, shape.x1, shape.y1, shape.x2 - shape.x1, shape.y2 - shape.y1);
+           }
+         });
       
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.save();
-      context.translate(offset?.x, offset?.y)
+
+      const x1 = (500 - offset?.x * scale + scaleOffset.x)/ scale
+      const y1 = (500 - offset?.y * scale + scaleOffset.y)/ scale
+      const x2 = (900 - offset?.x * scale + scaleOffset.x)/ scale
+      const y2 = (900- offset?.y * scale + scaleOffset.y)/ scale
+
+      const width = x2 - x1
+      const height = y2 - y1
+
+      context.drawImage(img, x1, y1, width, height);
      
       context.restore();
-      context.drawImage(img, initialPos.x, initialPos.y, width, height);
-     
-       if(offset){
-    
-        imgObj = {
-         img:img.currentSrc,
-         initialPos:{
-           x: initialPos?.x - offset?.x,
-           y: initialPos?.y -offset?.y,
-         },
-         mousePos:{
-           x: mousePos?.x - offset?.x,
-           y: mousePos?.y - offset?.y
-         }
-      }
-       }else{
-          imgObj = {
-        img:img.currentSrc,
-        initialPos,
-        mousePos
-      }}};
-  
-    const finishImage = (e) => {
-      e.preventDefault()
-      addShapes({shapeName:"image", ...imgObj})
-      setIsDrawing(false)
-      setImg(null)
+      addShapes({ shapeName: "image", x1, y1, x2, y2, img:img.currentSrc });
+      setImg(null) 
     }
+  }, [img, contextRef, canvasRef, offset, scale, scaleOffset, shapesData, addShapes])
 
-    canvas.addEventListener("mousedown" , startImage)
-    canvas.addEventListener("mousemove", image)
-    canvas.addEventListener("mouseup" , finishImage)
-
-    canvas.addEventListener("touchstart", startImage)
-    canvas.addEventListener("touchmove", image, {passive: false})
-    canvas.addEventListener("touchend", finishImage)
-
-    return () => {
-       canvas.removeEventListener("mousedown" , startImage)
-       canvas.removeEventListener("mousemove", image)
-       canvas.removeEventListener("mouseup" , finishImage)
-
-       canvas.removeEventListener("touchstart", startImage)
-       canvas.removeEventListener("touchmove", image, {passive: false})
-       canvas.removeEventListener("touchend", finishImage)
-    }
-    
-
-  }, [canvasRef,img,isDrawing,contextRef, addShapes,offset, shapesData, initialPos])
   return (
     <>
       <input type="file"   accept="image/*" ref={inputRef}  onChange={handleImage} className="hidden"/>

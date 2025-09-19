@@ -1,4 +1,4 @@
-import React, { useEffect, useState , useRef} from "react";
+import React, { useEffect, useState , useRef, useLayoutEffect} from "react";
 import getMousePos from "../../utils/getMousePos.utils";
 import checkShapeCollision from "../../utils/checkShapeCollision.utils";
 import useShapeStore from "../../stores/shapeStore";
@@ -26,35 +26,55 @@ export default function Selector({ canvasRef, contextRef }) {
 
   const moveShape = (seletedShape,roughCanvas,context, dy, dx) => {
    
-      if (seletedShape.shapeName !== "pencil") {
-        const { id, x1, y1, x2, y2, shapeName } = seletedShape;
+    if (seletedShape.shapeName === "pencil") {
+        
+       const { id, shapeName, points } = seletedShape;
+       const pointsArray = points.map((point) => ({
+         x: point.x + dx,
+         y: point.y + dy,
+       }));
+       createPencil(pointsArray, context);
+       return { id, shapeName, points: pointsArray };
+        
+    } else if (seletedShape.shapeName === "image") {
+      const { id, x1, y1, x2, y2, img, shapeName } = seletedShape
+      
+         const image = new Image();
+         image.src = img;
+        
+              const newX1 = x1 + dx;
+             const  newX2 = x2 + dx;
 
-        const element = createShape(
-          x1 + dx,
-          y1 + dy,
-          x2 + dx,
-          y2 + dy,
-          shapeName
-        );
+             const  newY1 = y1 + dy;
+             const  newY2 = y2 + dy;
 
-        if (element.shapeName === "arrow") {
-          const { arrowline, arrowhead1, arrowhead2 } = element.roughObj;
-          roughCanvas.draw(arrowline);
-          roughCanvas.draw(arrowhead1);
-          roughCanvas.draw(arrowhead2);
-        } else {
-          roughCanvas.draw(element.roughObj);
-        }
+   
+      context.drawImage(image, newX1, newY1, newX2 - newX1, newY2 - newY1)
+      return { id:id, x1:newX1, y1:newY1, x2:newX2, y2:newY2, img : img, shapeName:shapeName}
 
-        return{ id, ...element };
       } else {
-        const { id, shapeName, points } = seletedShape;
-        const pointsArray = points.map((point) => ({
-          x: point.x + dx,
-          y: point.y + dy,
-        }));
-        createPencil(pointsArray, context);
-        return { id, shapeName, points: pointsArray };
+      
+
+           const { id, x1, y1, x2, y2, shapeName } = seletedShape;
+
+           const element = createShape(
+             x1 + dx,
+             y1 + dy,
+             x2 + dx,
+             y2 + dy,
+             shapeName
+           );
+
+           if (element.shapeName === "arrow") {
+             const { arrowline, arrowhead1, arrowhead2 } = element.roughObj;
+             roughCanvas.draw(arrowline);
+             roughCanvas.draw(arrowhead1);
+             roughCanvas.draw(arrowhead2);
+           } else {
+             roughCanvas.draw(element.roughObj);
+           }
+
+           return { id, ...element };
       }
     
      
@@ -62,62 +82,30 @@ export default function Selector({ canvasRef, contextRef }) {
 
   
   
-  useEffect(() => {
+  // useEffect(() => {
 
 
-    const context = contextRef.current
-    const canvas = canvasRef.current
-    const roughCanvas = rough.canvas(rough) 
+  //   const context = contextRef.current
 
-    if(!context || !canvas) return
+  //   if (!isBoxPresent && seletedShape) {
 
-    if (!isBoxPresent && seletedShape) {
+  //             context.save();
+  //             context.translate(
+  //               offset?.x * scale - scaleOffset.x,
+  //               offset?.y * scale - scaleOffset.y
+  //             );
+  //             context.scale(scale, scale);
 
-            
-              context.clearRect(0, 0, canvas.width, canvas.height);
-              context.save();
-              context.translate(
-                offset?.x * scale - scaleOffset.x,
-                offset?.y * scale - scaleOffset.y
-              );
-              context.scale(scale, scale);
-
-      
-                  shapesData.forEach((shape) => {
-                    if (shape.roughObj && shape.id !== seletedShape.id) {
-                      if (shape.shapeName === "arrow") {
-                        const { arrowline, arrowhead1, arrowhead2 } =
-                          shape.roughObj;
-                        roughCanvas.draw(arrowline);
-                        roughCanvas.draw(arrowhead1);
-                        roughCanvas.draw(arrowhead2);
-                      } else {
-                        roughCanvas.draw(shape.roughObj);
-                      }
-                    }
-
-                    if (
-                      shape.shapeName === "pencil" &&
-                      shape.id !== seletedShape.id
-                    ) {
-                      createPencil(shape.points, context);
-                    }
-                  });
-      
-      
-      
-              const dx = 0
-              const dy = 0
-
-            
-              createBoundingBox(context, seletedShape, dx, dy);
-              context.restore();
-             setIsBoxPresent(true)
-       }
-  }, [seletedShape,scaleOffset, scale, isBoxPresent, contextRef,offset, canvasRef, shapesData])
+  //             const dx = 0
+  //             const dy = 0
+  //             createBoundingBox(context, seletedShape, dx, dy);
+  //             context.restore();
+  //            setIsBoxPresent(true)
+  //      }
+  // }, [seletedShape,scaleOffset, scale, isBoxPresent, contextRef,offset])
 
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const roughCanvas = rough.canvas(canvas);
@@ -171,13 +159,25 @@ export default function Selector({ canvasRef, contextRef }) {
           createPencil(shape.points, context);
         }
 
+       
+        if (shape.shapeName === "image" && shape.id !== seletedShape.id) {
+          const image = new Image();
+          image.src = shape.img;
+          context.drawImage(
+            image,
+            shape.x1,
+            shape.y1,
+            shape.x2 - shape.x1,
+            shape.y2 - shape.y1
+          );
+        }
       });
 
       const dx = mousePos.x - initialPos.x;
       const dy = mousePos.y - initialPos.y; 
 
       shapeObj = moveShape(seletedShape, roughCanvas, context, dy, dx)
-      createBoundingBox(context, seletedShape, dx, dy);
+      // createBoundingBox(context, seletedShape, dx, dy);
       context.restore();
       
     };
@@ -186,8 +186,8 @@ export default function Selector({ canvasRef, contextRef }) {
       e.preventDefault();
       setInitialPos(null)
       setIsSelected(false)
-     
-      setSelectedShape(null)
+      setIsBoxPresent(false)
+      console.log(shapeObj)
       if (shapeObj?.id) {
         updateShape(shapeObj);
       }

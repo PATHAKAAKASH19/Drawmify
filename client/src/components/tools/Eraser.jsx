@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import useShapeStore from "../../stores/shapeStore";
 import getMousePos from "../../utils/getMousePos.utils";
 import usePanningStore from "../../stores/panningStore";
@@ -16,7 +16,7 @@ export default function Eraser({ canvasRef, contextRef }) {
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const roughCanvas = rough.canvas(canvas);
@@ -65,6 +65,19 @@ export default function Eraser({ canvasRef, contextRef }) {
         if (shape.shapeName === "pencil") {
           createPencil(shape.points, context);
         }
+
+
+          if (shape.shapeName === "image") {
+            const image = new Image();
+            image.src = shape.img;
+            context.drawImage(
+              image,
+              shape.x1,
+              shape.y1,
+              shape.x2 - shape.x1,
+              shape.y2 - shape.y1
+            );
+          }
       });
 
       context.restore();

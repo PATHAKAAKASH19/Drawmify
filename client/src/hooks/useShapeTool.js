@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useLayoutEffect} from "react";
 import usePanningStore from "../stores/panningStore";
 import useScalingStore from "../stores/scalingStore";
 import useShapeStore from "../stores/shapeStore";
@@ -20,7 +20,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
   const offset = usePanningStore((state) => state.offset);
 
     
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const roughCanvas = rough.canvas(canvas);
@@ -68,6 +68,19 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
         if (shape.shapeName === "pencil") {
           createPencil(shape.points, context);
         }
+
+
+        if (shape.shapeName === "image") {
+                const image = new Image();
+                image.src = shape.img;
+             context.drawImage(
+               image,
+               shape.x1,
+               shape.y1,
+               shape.x2 - shape.x1,
+               shape.y2 - shape.y1
+             );
+           }
       });
 
       if (shapeName !== "pencil") {
