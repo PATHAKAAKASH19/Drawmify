@@ -1,12 +1,12 @@
   
-  import { isPointInRectangle } from "./rectangle.utils";
-  import { isPointInDiamond } from "./diamond.utils";
-  import { isPointInEllipse } from "./ellipse.utils";
-  import { isPointInArrow } from "./arrow.utils";
-  import { isPointInLine } from "./line.utils";
-  import { isPointInPencil } from "./pencil.utils";
-  import { isPointInImage } from "./image.utils";
-  import { isPointInText } from "./text.utils";
+  import { isPointInRectangle } from "./checkCursorInShape.utils";
+  import { isPointInDiamond } from "./checkCursorInShape.utils";
+  import { isPointInEllipse } from "./checkCursorInShape.utils";
+  import { isPointInArrow } from "./checkCursorInShape.utils";
+  import { isPointInLine } from "./checkCursorInShape.utils";
+  import { isPointInPencil } from "./checkCursorInShape.utils";
+  import { isPointInImage } from "./checkCursorInShape.utils";
+  import { isPointInText } from "./checkCursorInShape.utils";
   
   
   const isPointInShape = (x, y, shape) => {
@@ -36,7 +36,6 @@
           return isPointInArrow(x, y, initialPos, mousePos);
       case "line":
         return isPointInLine(x, y, initialPos, mousePos);
-  
       case "image":
          return isPointInImage(x, y, initialPos, mousePos);
       case "text":

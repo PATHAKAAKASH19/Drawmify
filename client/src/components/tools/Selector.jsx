@@ -8,6 +8,7 @@ import rough from "roughjs";
 import { createPencil } from "../../utils/pencil.utils";
 import useScalingStore from "../../stores/scalingStore";
 import { createBoundingBox } from "../../utils/borderAroundShape";
+import usePropertyStore from "../../stores/propertyStore";
 
 export default function Selector({ canvasRef, contextRef }) {
   const [isSelected, setIsSelected] = useState(false);
@@ -20,7 +21,7 @@ export default function Selector({ canvasRef, contextRef }) {
   const updateShape = useShapeStore((state) => state.updateShape);
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
-
+  const properties = usePropertyStore(state => state.properties)
 
 
 
@@ -28,13 +29,13 @@ export default function Selector({ canvasRef, contextRef }) {
    
     if (seletedShape.shapeName === "pencil") {
         
-       const { id, shapeName, points } = seletedShape;
+       const { id, shapeName, points , propertiesObj} = seletedShape;
        const pointsArray = points.map((point) => ({
          x: point.x + dx,
          y: point.y + dy,
        }));
-       createPencil(pointsArray, context);
-       return { id, shapeName, points: pointsArray };
+       createPencil(pointsArray, context, propertiesObj);
+       return { id, shapeName, points: pointsArray , propertiesObj: propertiesObj};
         
     } else if (seletedShape.shapeName === "image") {
       const { id, x1, y1, x2, y2, img, shapeName } = seletedShape
@@ -42,11 +43,11 @@ export default function Selector({ canvasRef, contextRef }) {
          const image = new Image();
          image.src = img;
         
-              const newX1 = x1 + dx;
-             const  newX2 = x2 + dx;
+            const newX1 = x1 + dx;
+            const  newX2 = x2 + dx;
 
-             const  newY1 = y1 + dy;
-             const  newY2 = y2 + dy;
+            const  newY1 = y1 + dy;
+            const  newY2 = y2 + dy;
 
    
       context.drawImage(image, newX1, newY1, newX2 - newX1, newY2 - newY1)
@@ -55,14 +56,16 @@ export default function Selector({ canvasRef, contextRef }) {
       } else {
       
 
-           const { id, x1, y1, x2, y2, shapeName } = seletedShape;
+           const { id, x1, y1, x2, y2, shapeName , propertiesObj} = seletedShape;
 
+         console.log()
            const element = createShape(
              x1 + dx,
              y1 + dy,
              x2 + dx,
              y2 + dy,
-             shapeName
+             shapeName,
+            propertiesObj
            );
 
            if (element.shapeName === "arrow") {
@@ -156,7 +159,7 @@ export default function Selector({ canvasRef, contextRef }) {
         }
 
         if (shape.shapeName === "pencil" && shape.id !== seletedShape.id) {
-          createPencil(shape.points, context);
+          createPencil(shape.points, context, shape.propertiesObj);
         }
 
        
@@ -187,7 +190,6 @@ export default function Selector({ canvasRef, contextRef }) {
       setInitialPos(null)
       setIsSelected(false)
       setIsBoxPresent(false)
-      console.log(shapeObj)
       if (shapeObj?.id) {
         updateShape(shapeObj);
       }

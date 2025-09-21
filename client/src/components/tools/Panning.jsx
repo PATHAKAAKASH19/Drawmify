@@ -72,7 +72,7 @@ export default function Panning({canvasRef, contextRef}) {
         }}
     
         if(shape.shapeName === "pencil"){
-          createPencil(shape.points, context)
+          createPencil(shape.points, context, shape.propertiesObj)
         }
       
           if (shape.shapeName === "image") {

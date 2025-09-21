@@ -52,11 +52,6 @@
 const BoundingBoxDimension = (selectedShape) => {
      
 
-
-        
-       
-    
-
      let bBox;
 
      if (selectedShape.shapeName === "rectangle") {

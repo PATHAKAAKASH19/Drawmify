@@ -8,6 +8,7 @@ import createShape from "../utils/createShape.utils";
 import rough from "roughjs";
 import usePropertyStore from "../stores/propertyStore";
 
+
 export default function useShapeTool(canvasRef, contextRef, shapeName) {
 
 
@@ -41,6 +42,9 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
       setIsDrawing(true);
     };
 
+
+
+
     const draw = (e) => {
       e.preventDefault();
       if (!isDrawing) return;
@@ -67,7 +71,8 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
         }
 
         if (shape.shapeName === "pencil") {
-          createPencil(shape.points, context, properties);
+     
+          createPencil(shape.points, context, shape.propertiesObj);
         }
 
 
@@ -104,7 +109,6 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
         }
       } else {
         const point = mousePos
-
         const newPoints = [...points, point];
         setPoints(newPoints);
         createPencil(newPoints, context, properties);
@@ -112,6 +116,9 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
 
       context.restore();
     };
+
+
+
 
     const finishDrawing = (e) => {
         e.preventDefault();
@@ -122,7 +129,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
             addShapes(shape)
           
         } else {
-            addShapes({ shapeName: shapeName, points: points });
+            addShapes({ shapeName: shapeName, points: points, propertiesObj: properties });
         }
       setIsDrawing(false);
       setInitialPos(null);

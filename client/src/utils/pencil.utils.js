@@ -1,22 +1,9 @@
 
-// const createPencil = (context, pointArray) => {
-
-//     context.beginPath()
-//     context.moveTo(pointArray[0]?.x, pointArray[0]?.y)
-
-//     let i = 1
-//     while(i < pointArray.length){
-//         context.lineTo(pointArray[i].x, pointArray[i].y)
-//         i++
-//     }
-//     context.stroke()
-    
-// }
 
 
 
 import {getStroke} from "perfect-freehand"
-import getSvgPathFromStroke from './getSvgPathFromStroke';
+
 
 
   const createPencil = (newPoints, context, propertiesObj) => {
@@ -39,6 +26,7 @@ import getSvgPathFromStroke from './getSvgPathFromStroke';
           },
         })
 
+     
         const pathData = getSvgPathFromStroke(outlinePoints)
         let myPath = new Path2D(pathData)
         context.fillStyle = propertiesObj.currentItemStrokeColor;
@@ -48,58 +36,48 @@ import getSvgPathFromStroke from './getSvgPathFromStroke';
 
 
 
- const isPointInPencil = (x, y, points, tolerance = 20) => {
-  if (!points || points.length < 2) return false;
 
-  const tolSq = tolerance * tolerance;
 
-  for (let i = 0; i < points.length - 1; i++) {
-    const p1 = points[i];
-    const p2 = points[i + 1];
+  
 
-    // Quick bounding-box check (cheap rejection)
-    if (
-      x < Math.min(p1.x, p2.x) - tolerance ||
-      x > Math.max(p1.x, p2.x) + tolerance ||
-      y < Math.min(p1.y, p2.y) - tolerance ||
-      y > Math.max(p1.y, p2.y) + tolerance
-    ) {
-      continue;
+function getSvgPathFromStroke(points, closed = true) {
+    const average = (a, b) => (a + b) / 2;
+    const len = points.length;
+
+    if (len < 4) {
+      return ``;
     }
 
-    // Distance from point to line segment
-    if (pointToSegmentDistanceSq(x, y, p1, p2) <= tolSq) {
-      return true;
+    let a = points[0];
+    let b = points[1];
+    const c = points[2];
+
+    let result = `M${a[0].toFixed(2)},${a[1].toFixed(2)} Q${b[0].toFixed(
+      2
+    )},${b[1].toFixed(2)} ${average(b[0], c[0]).toFixed(2)},${average(
+      b[1],
+      c[1]
+    ).toFixed(2)} T`;
+
+    for (let i = 2, max = len - 1; i < max; i++) {
+      a = points[i];
+      b = points[i + 1];
+      result += `${average(a[0], b[0]).toFixed(2)},${average(
+        a[1],
+        b[1]
+      ).toFixed(2)} `;
     }
+
+    if (closed) {
+      result += "Z";
+    }
+
+    return result;
   }
 
-  return false;
-};
 
-// Helper: squared distance from point to line segment
-const pointToSegmentDistanceSq = (x, y, p1, p2) => {
-  const dx = p2.x - p1.x;
-  const dy = p2.y - p1.y;
 
-  if (dx === 0 && dy === 0) {
-    // Segment is a point
-    const dpx = x - p1.x;
-    const dpy = y - p1.y;
-    return dpx * dpx + dpy * dpy;
-  }
 
-  // Project point onto line [p1, p2], clamped to segment
-  const t = Math.max(
-    0,
-    Math.min(1, ((x - p1.x) * dx + (y - p1.y) * dy) / (dx * dx + dy * dy))
-  );
 
-  const projX = p1.x + t * dx;
-  const projY = p1.y + t * dy;
 
-  const dpx = x - projX;
-  const dpy = y - projY;
-  return dpx * dpx + dpy * dpy;
-};
-
-  export {isPointInPencil, createPencil}
+  export {createPencil}

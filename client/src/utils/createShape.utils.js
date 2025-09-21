@@ -5,52 +5,49 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
       const generator = rough.generator()
 
       
-      let propertyObj = {
+      let propertiesObj = {
         stroke: optionObj.currentItemStrokeColor,
-        strokeWidth: 4,
+        strokeWidth: 2,
         fill: optionObj.currentItemBackgroundColor,
-        fillStyle: "cross-hatch",
+        //   fillStyle: "cross-hatch",
         fillWeight: 1,
         hachureAngle: 30,
         hachureGap: 8,
         roughness: 1,
         bowing: 0,
-        strokeLineDash: [10, 5],
-        simplification:0.9,
+        preserveVertices: false
+        //   strokeLineDash: [10, 5],
+        //   simplification:0.9,
       };
       
       let roughObj
       switch(shapeName) {
         
         case "rectangle":
-              roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1, propertyObj);
+              roughObj = generator.rectangle(x1, y1, x2 - x1, y2 - y1, propertiesObj);
               break;
 
         case "diamond":
-              roughObj = createDiamond(x1, y1, x2, y2, propertyObj, generator)
+              roughObj = createDiamond(x1, y1, x2, y2, propertiesObj, generator)
               break;
 
         case "ellipse": 
-               roughObj = generator.ellipse(x1, y1, x2 - x1, y2 - y1, propertyObj);
+               roughObj = generator.ellipse(x1, y1, x2 - x1, y2 - y1, propertiesObj);
                break;
 
         case "line":
-               roughObj = generator.line(x1, y1, x2, y2, propertyObj) 
+               roughObj = generator.line(x1, y1, x2, y2, propertiesObj) 
                break;
 
         case "arrow": 
-              roughObj = createArrow(x1, y1, x2, y2, propertyObj, generator)
+              roughObj = createArrow(x1, y1, x2, y2, propertiesObj, generator)
               break;
 
-        case "image":
-             roughObj = generator.polygon()
-             break;
-        
         default:
              return     
       }
     
-      return {x1, y1, x2, y2, shapeName, roughObj}
+      return {x1, y1, x2, y2, shapeName, roughObj, propertiesObj:optionObj}
 
 }
 

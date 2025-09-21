@@ -10,7 +10,7 @@ import useScalingStore from '../stores/scalingStore.js';
 import usePanningStore from '../stores/panningStore.js';
 import UndoAndRedo from './UndoAndRedo.jsx';
 import PropertiesPanel from './sidebar/PropertiesPanel.jsx';
-import usePropertyStore from '../stores/propertyStore.js';
+
 
 
 const Canvas = () => {
@@ -22,7 +22,7 @@ const Canvas = () => {
   const offset = usePanningStore(state => state.offset)
   const scale = useScalingStore(state => state.scale)
   const scaleOffset = useScalingStore(state => state.scaleOffset)
-  const properties = usePropertyStore(state =>  state.properties)
+
 
   useLayoutEffect(() => {
 
@@ -79,7 +79,8 @@ const Canvas = () => {
       }
 
       if (shape.shapeName === "pencil") {
-        createPencil(shape.points, context, properties);
+       
+        createPencil(shape.points, context, shape.propertiesObj);
       }
 
       if (shape.shapeName === "image") {
@@ -101,7 +102,7 @@ const Canvas = () => {
   
     context.restore();
 
-  } ,[offset, scale, shapesData, scaleOffset, properties])
+  } ,[offset, scale, shapesData, scaleOffset])
 
 
 
