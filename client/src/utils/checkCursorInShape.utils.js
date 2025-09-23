@@ -220,11 +220,20 @@ const isPointOnLine = (px, py, lineStart, lineEnd, tolerance) => {
   return dotProduct >= 0 && dotProduct <= lineLength * lineLength;
 };
 
-const isPointInText = (x, y, initialPos) => {};
+const isPointInText = (x, y, initialPos, mousePos) => {
 
-export {
+  return (
+    x >= initialPos.x &&
+    x <= mousePos.x &&
+    y >= initialPos.y &&
+    y <= mousePos.y
+  );
+
+};
+
+export {                                                                      
   isPointInArrow,
-  isPointInDiamond,
+  isPointInDiamond,                                                    
   isPointInEllipse,
   isPointInLine,
   isPointInPencil,

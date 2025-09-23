@@ -47,31 +47,31 @@ export default function SelectTool() {
          name:"ellipse",
         },
 
-        {
-          element:<MoveRight/>,
-          name:"arrow",
-        },   
-        {
-         element:<Minus/>,
-         name:"line",
-        },
-        {
-         element:<Pencil />,
-         name:"pencil",
-        },
-        {
-         element:<Image/>,
-         name:"image",
-        },
+        // {
+        //   element:<MoveRight/>,
+        //   name:"arrow",
+        // },   
+        // {
+        //  element:<Minus/>,
+        //  name:"line",
+        // },
+        // {
+        //  element:<Pencil />,
+        //  name:"pencil",
+        // },
+        // {
+        //  element:<Image/>,
+        //  name:"image",
+        // },
 
-        {
-          element:<Keyboard/>,
-          name:"text",
-        },
-        {
-         element:<Eraser />,
-         name:"eraser"
-        }
+        // {
+        //   element:<Keyboard/>,
+        //   name:"text",
+        // },
+        // {
+        //  element:<Eraser />,
+        //  name:"eraser"
+        // }
   ]
 
   return (

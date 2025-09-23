@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, {useState, useLayoutEffect } from "react";
 import useShapeStore from "../../stores/shapeStore";
 import getMousePos from "../../utils/getMousePos.utils";
 import usePanningStore from "../../stores/panningStore";
@@ -78,6 +78,14 @@ export default function Eraser({ canvasRef, contextRef }) {
               shape.y2 - shape.y1
             );
           }
+        
+         if (shape.shapeName === "text") {
+           context.font = shape.font;
+           context.textBaseline = "hanging";
+           context.fillStyle = shape.strokeColor;
+
+           context.fillText(shape.text, shape.x1, shape.y1);
+         }
       });
 
       context.restore();

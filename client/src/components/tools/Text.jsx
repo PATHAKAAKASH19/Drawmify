@@ -10,10 +10,9 @@ import usePropertyStore from "../../stores/propertyStore";
 export default function Text({ canvasRef, contextRef }) {
   const [text, setText] = useState("");
   const [pos, setPos] = useState(null);
-  const [dimensions, setDimensions] = useState({ width: 200, height: 40 });
+
   const inputRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
-
 
   const addShapes = useShapeStore((state) => state.addShapes);
   const shapesData = useShapeStore((state) => state.shapesData);
@@ -24,22 +23,32 @@ export default function Text({ canvasRef, contextRef }) {
 
   // Handle text completion
   const handleTextComplete = (e) => {
-    e.preventDefault()
+
+    e.preventDefault();
+    const metrics = contextRef.current.measureText(text);
+    console.log(metrics)
     if (text.trim()) {
       addShapes({
         shapeName: "text",
-        x1: pos.x,
-        y1: pos.y,
+        x1: pos.x - 1,
+        y1: pos.y + 9,
+        x2: pos.x - 1 + 2.5*metrics.width,
+        y2:
+          pos.y +
+          9 +
+         2*( metrics.fontBoundingBoxAscent +
+          metrics.fontBoundingBoxDescent),
         text: text.trim(),
         font: "normal 25px sans-serif",
         strokeColor: properties.currentItemStrokeColor,
-        textBaseline: "alphabetic",
+        width: metrics.width,
+        height:
+          metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent,
       });
     }
     setText("");
     setPos(null);
     setIsActive(false);
-
   };
 
   // Handle text cancellation
@@ -51,12 +60,10 @@ export default function Text({ canvasRef, contextRef }) {
 
   // Handle keyboard events
   const handleKeyDown = (e) => {
-
-     if (e.key === "Escape") {
+    if (e.key === "Escape") {
       handleCancel();
     }
   };
-
 
   useLayoutEffect(() => {
     if (!isActive || !pos || !canvasRef.current || !contextRef.current) return;
@@ -107,15 +114,11 @@ export default function Text({ canvasRef, contextRef }) {
           context.font = shape.font;
           context.textBaseline = "hanging";
           context.fillStyle = shape.strokeColor;
-          context.fillText(shape.text, shape.x1, shape.y1);
+
         }
       });
 
-   
-   
-
       context.restore();
-
     };
 
     draw();
@@ -132,7 +135,6 @@ export default function Text({ canvasRef, contextRef }) {
     contextRef,
     isActive,
     pos,
-    dimensions,
     properties,
   ]);
 
@@ -146,6 +148,8 @@ export default function Text({ canvasRef, contextRef }) {
     const handleText = (e) => {
       if (isActive) return; // Prevent new placement while active
 
+
+    
       const mousePos = getMousePos(canvas, e, offset, scale, scaleOffset);
       setPos(mousePos);
       setIsActive(true);
@@ -161,37 +165,34 @@ export default function Text({ canvasRef, contextRef }) {
   useEffect(() => {
     if (isActive && inputRef.current) {
       inputRef.current.focus();
-     
     }
   }, [isActive]);
 
   return (
     <>
       {isActive && (
-      
-          <input
-            ref={inputRef}
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onBlur={handleTextComplete}
-            onKeyDown={handleKeyDown}
-            className="fixed pt-0 m-0  border-blue-500 rounded outline-none  bg-transparent "
-            style={{
-              top: `${pos?.y-2}px`,
-              left: `${pos?.x-1}px`,
-              width: `${dimensions.width}px`,
-              height: `${dimensions.height}px`,
-              color: properties.currentItemStrokeColor,
-              fontSize: "25px",
-              fontFamily: "sans-serif",
-           
-              transform: "translateZ(0)", // Force hardware acceleration
-              zIndex: 1001,
-            }}
-          />
-        
-       
+        <input
+          ref={inputRef}
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onBlur={handleTextComplete}
+          onKeyDown={handleKeyDown}
+          className="fixed pt-0 m-0  border-blue-500 rounded outline-none  bg-transparent "
+          style={{
+            top: `${(pos?.y ) * scale - scaleOffset.y + offset.y * scale}px`,
+            left: `${
+              (pos?.x - 1) * scale - scaleOffset.x + offset.x * scale
+            }px`,
+
+            color: properties.currentItemStrokeColor,
+            fontSize: `${25 * scale}px`,
+            fontFamily: "sans-serif",
+
+            transform: "translateZ(0)", // Force hardware acceleration
+            zIndex: 1001,
+          }}
+        />
       )}
     </>
   );

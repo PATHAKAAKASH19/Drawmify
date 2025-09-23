@@ -86,6 +86,13 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
                shape.x2 - shape.x1,
                shape.y2 - shape.y1
              );
+        }
+        
+           if (shape.shapeName === "text" ) {
+             context.font = shape.font;
+             context.textBaseline = "hanging";
+             context.fillStyle = shape.strokeColor;
+             context.fillText(shape.text, shape.x1, shape.y1);
            }
       });
 

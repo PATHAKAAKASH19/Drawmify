@@ -97,6 +97,13 @@ const Canvas = () => {
           );
        
       }
+
+        if (shape.shapeName === "text") {
+          context.font = shape.font;
+          context.textBaseline = "hanging";
+          context.fillStyle = shape.strokeColor;
+          context.fillText(shape.text, shape.x1, shape.y1);
+        }
     });
 
   
@@ -112,10 +119,11 @@ const Canvas = () => {
       <canvas
         ref={canvasRef}
         className={`bg-white border-gray-300`}
+     
       />
-       
-      <PropertiesPanel></PropertiesPanel>
-      <UndoAndRedo/>
+{/*        
+      <PropertiesPanel></PropertiesPanel> */}
+   
 
       
       <Zoom canvasRef={canvasRef}></Zoom>

@@ -4,4 +4,10 @@
 
 
 
-   
+   html,
+   body {
+       overscroll-behavior: none;
+       touch-action: none;
+       /* disables browser pinch-zoom + pan */
+   }
+

@@ -12,15 +12,14 @@
   const isPointInShape = (x, y, shape) => {
 
     let initialPos = {
-      x:shape.x1,
-      y:shape.y1
+      x:shape?.x1,
+      y:shape?.y1
     }
 
     let mousePos = {
-      x:shape.x2,
-      y:shape.y2
+      x:shape?.x2,
+      y:shape?.y2
     }
-
  
     
     switch (shape.shapeName) {
@@ -39,7 +38,7 @@
       case "image":
          return isPointInImage(x, y, initialPos, mousePos);
       case "text":
-         return isPointInText(x, y,initialPos, mousePos)
+         return isPointInText(x, y,initialPos,mousePos)
       default:
         return false;
     }
