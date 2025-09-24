@@ -11,3 +11,7 @@
        /* disables browser pinch-zoom + pan */
    }
 
+   canvas {
+       touch-action: none;
+       /* also disable on canvas */
+   }

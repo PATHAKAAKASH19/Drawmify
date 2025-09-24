@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState , useRef} from 'react'
 import useScalingStore from '../stores/scalingStore'
+import getMousePos from '../utils/getMousePos.utils'
+import usePanningStore from '../stores/panningStore'
 
 export default function Zoom({canvasRef}) {
 
   const [scale, setScale] = useState(null)
-  const [touchStart, setTouchStart] = useState(false)
-  const [prevTouchDis, setPrevTouchDis] = useState(null)
+
+  const [isZooming, setIsZooming] = useState(false)
+  const currentScale = useRef(true)
 
   const changeScaling = useScalingStore(state => state.changeScaling) 
-  const scaleValue = useScalingStore(state =>  state.scale)
-  
+  const scaleValue = useScalingStore(state => state.scale)
+  const prevdis = useRef(0) 
+  const scaleOffset = useScalingStore(state => state.scaleOffset)
+  const offset = usePanningStore(state => state.offset)
+
     const onZoom = (delta) => {
        setScale((prev) => Math.min(Math.max(prev + delta, 0.1), 20))
     }
@@ -17,74 +23,91 @@ export default function Zoom({canvasRef}) {
   
   useEffect(() => {
 
-    setScale(scaleValue)
+    if (currentScale.current) {
+      setScale(scaleValue)
+      currentScale.current = false
+    }
   }, [scaleValue])
     
 
   useEffect(() => {
     
     const canvas = canvasRef.current
-
+    
 
     if(!canvas) return
 
-   const getDistance = (touch1, touch2) => {
-     const dx = touch1.clientX - touch2.clientX;
-     const dy = touch1.clientY - touch2.clientY;
-     return Math.sqrt(dx * dx + dy * dy);
-   };
 
-    const handleTouchStart = (e) => {
-         e.preventDefault();  
-      console.log(e.targetTouches[0].identifier)
-      if (e.touches.length === 2) {
-      
-        const distance = getDistance(e.touches[0], e.tocuhes[1])
-        setTouchStart(true)
-        setPrevTouchDis(distance)
+   
+
+    const handleMove = (e) => {
+   
+        e.preventDefault(); // This will WORK with { passive: false }
+        e.stopPropagation();
+      console.log("event",e)
+      if (e.deltaY) {
+    const zoomIntensity = 0.05;
+        const wheel = e.deltaY < 0 ? 0.5 : -0.5;
+        const zoomFactor = Math.exp(wheel * zoomIntensity);
+        setScale((prev) => Math.max(0.1, Math.min(20, prev * zoomFactor)));
       }
     }
 
-    const handleTouchMove = (e) => {
-      e.preventDefault()
-      if (!touchStart) return
-      
+    const handleTouchStart = (e) => {
       if (e.touches.length === 2) {
-        const newDistance = getDistance(e.touches[0], e.tocuhes[1]);
-        
+       let initialDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
 
-        if (prevTouchDis) {
-          const scale = newDistance / prevTouchDis
-          
-           setScale((prev) => Math.min(Math.max(prev + scale, 0.1), 20));
-        }
+        setIsZooming(initialDistance)
+      }
+    };
 
-         setPrevTouchDis(newDistance);
-       }
-     }
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 2 && isZooming) {
+        e.preventDefault();
 
-    const handleTouchEnd = (e) => {
-       e.preventDefault();  
-      setTouchStart(false)
-      setPrevTouchDis(null)
-    }
+        const currentDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
 
+        const zoomFactor = currentDistance / isZooming;
 
+           const smoothedRatio = 1 + (zoomFactor - 1) * 0.01; 
+      
+        setScale((prev) => Math.max(0.1, Math.min(20, prev * smoothedRatio)));
+      }
+    };
+
+    const handleTouchEnd = () => {
+       setIsZooming(null)
+    };
 
 
   
-    canvas.addEventListener("touchstart", handleTouchStart, )
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: false })
-    canvas.addEventListener("touchend", handleTouchEnd)
+
+
+
+      canvas.addEventListener("wheel", handleMove, {passive: false});
+      canvas.addEventListener("touchstart", handleTouchStart, {
+        passive: true,
+      });
+    canvas.addEventListener("touchmove", handleTouchMove,  { passive: false })
+    canvas.addEventListener("touchend",handleTouchEnd)
 
     return () => {
-      canvas.removeEventListener("touchstart", handleTouchStart);
-      canvas.removeEventListener("touchmove", handleTouchMove, {
-        passive: false,
-      });
-      canvas.removeEventListener("touchend", handleTouchEnd);
+      
+      canvas.removeEventListener("wheel", handleMove);
+    canvas.removeEventListener("touchstart", handleTouchStart);
+    canvas.removeEventListener("touchmove", handleTouchMove);
+    canvas.removeEventListener("touchend", handleTouchEnd);
     }
-  }, [canvasRef, touchStart, prevTouchDis])
+   
+    
+
+  }, [canvasRef,isZooming])
 
 
     useEffect(() => {

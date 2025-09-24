@@ -36,7 +36,7 @@ const Canvas = () => {
     contextRef.current = context
    
     setCanvasSetUp(true)
-  
+
   }, [])
 
 
@@ -113,17 +113,45 @@ const Canvas = () => {
 
 
 
+  useEffect(() => {
+    const preventZoom = (e) => {
+      if (
+        e.ctrlKey || // ctrl + scroll
+        e.metaKey || // ⌘ + scroll (Mac)
+        e.type === "gesturestart" ||
+        e.type === "gesturechange"
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("wheel", preventZoom, { passive: false });
+    window.addEventListener("gesturestart", preventZoom, { passive: false });
+    window.addEventListener("gesturechange", preventZoom, { passive: false });
+    window.addEventListener("gestureend", preventZoom, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", preventZoom);
+      window.removeEventListener("gesturestart", preventZoom);
+      window.removeEventListener("gesturechange", preventZoom);
+      window.removeEventListener("gestureend", preventZoom);
+    };
+  }, []);
+
   return (
     <div className="relative h-screen flex justify-center items-center ">
       <SelectTool/>
       <canvas
         ref={canvasRef}
         className={`bg-white border-gray-300`}
-     
+        style={{
+            touchAction:"none"
+        }}
+       
       />
-{/*        
-      <PropertiesPanel></PropertiesPanel> */}
-   
+       
+     <PropertiesPanel></PropertiesPanel> 
+       <UndoAndRedo/> 
 
       
       <Zoom canvasRef={canvasRef}></Zoom>
