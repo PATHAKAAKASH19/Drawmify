@@ -44,9 +44,9 @@ export default function Zoom({canvasRef}) {
    
         e.preventDefault(); // This will WORK with { passive: false }
         e.stopPropagation();
-      console.log("event",e)
+      
       if (e.deltaY) {
-    const zoomIntensity = 0.05;
+       const zoomIntensity = 0.05;
         const wheel = e.deltaY < 0 ? 0.5 : -0.5;
         const zoomFactor = Math.exp(wheel * zoomIntensity);
         setScale((prev) => Math.max(0.1, Math.min(20, prev * zoomFactor)));
@@ -130,7 +130,7 @@ export default function Zoom({canvasRef}) {
   
 
   return (
-    <div className="absolute flex gap-3 top-14 left-20 cursor-pointer">
+    <div className="absolute flex gap-3 bottom-14 left-20 cursor-pointer">
       <button
         type="button"
         className="w-18 h-6 border-1 flex justify-center items-center  text-4xl rounded cursor-pointer "
