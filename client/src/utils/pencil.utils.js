@@ -9,11 +9,11 @@ import {getStroke} from "perfect-freehand"
   const createPencil = (newPoints, context, propertiesObj) => {
        
         const outlinePoints = getStroke(newPoints, {
-          size: 10,
+          size:  8*propertiesObj.currentItemStrokeWidth,
           thinning: 0.65,
           smoothing: 0.99,
           streamline: 0.89,
-          simulatePressure: true,
+         
             start: {
             cap: true,
             taper: 0,
@@ -25,11 +25,15 @@ import {getStroke} from "perfect-freehand"
             easing: (t) => t,
           },
         })
+    console.log(propertiesObj.currentItemStrokeWidth)
+    
+     
 
      
         const pathData = getSvgPathFromStroke(outlinePoints)
         let myPath = new Path2D(pathData)
         context.fillStyle = propertiesObj.currentItemStrokeColor;
+       
         context.fill(myPath)
   }
   

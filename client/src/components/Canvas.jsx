@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SelectTool from './SelectTool.jsx';
 import GetTool from './GetTool.jsx';
 import rough from 'roughjs';
@@ -24,7 +24,7 @@ const Canvas = () => {
   const scaleOffset = useScalingStore(state => state.scaleOffset)
 
 
-  useLayoutEffect(() => {
+  useEffect(() => {
 
     const canvas = canvasRef.current;
     if(!canvas) return
@@ -55,7 +55,7 @@ const Canvas = () => {
 
   }, [tool])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
 
     const canvas = canvasRef.current
     const context = contextRef.current

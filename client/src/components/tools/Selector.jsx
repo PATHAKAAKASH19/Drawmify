@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import getMousePos from "../../utils/getMousePos.utils";
 import checkShapeCollision from "../../utils/checkShapeCollision.utils";
 import useShapeStore from "../../stores/shapeStore";
@@ -116,28 +116,29 @@ export default function Selector({ canvasRef, contextRef }) {
     }
   };
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   const context = contextRef.current
+    const context = contextRef.current
 
-  //   if (!isBoxPresent && seletedShape) {
+    if (seletedShape) {
+      console.log("aaa")
+      console.log(seletedShape)
+              context.save();
+              context.translate(
+                offset?.x * scale - scaleOffset.x,
+                offset?.y * scale - scaleOffset.y
+              );
+              context.scale(scale, scale);
 
-  //             context.save();
-  //             context.translate(
-  //               offset?.x * scale - scaleOffset.x,
-  //               offset?.y * scale - scaleOffset.y
-  //             );
-  //             context.scale(scale, scale);
+              const dx = 0
+              const dy = 0
+              createBoundingBox(context, seletedShape, dx, dy);
+              context.restore();
+              
+       }
+  }, [seletedShape,scaleOffset, scale, isBoxPresent, contextRef,offset])
 
-  //             const dx = 0
-  //             const dy = 0
-  //             createBoundingBox(context, seletedShape, dx, dy);
-  //             context.restore();
-  //            setIsBoxPresent(true)
-  //      }
-  // }, [seletedShape,scaleOffset, scale, isBoxPresent, contextRef,offset])
-
-  useLayoutEffect(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const roughCanvas = rough.canvas(canvas);
@@ -149,12 +150,17 @@ export default function Selector({ canvasRef, contextRef }) {
       e.preventDefault();
       const mousePos = getMousePos(canvas, e, offset, scale, scaleOffset);
       const element = checkShapeCollision(mousePos.x, mousePos.y, shapesData);
-
+     console.log(element)
       if (element) {
         setSelectedShape(element);
         setIsSelected(true);
         e.target.style.cursor = "move";
         setInitialPos(mousePos);
+      } else {
+             setSelectedShape(null);
+             setIsSelected(false);
+             e.target.style.cursor = "default";
+             setInitialPos(null);
       }
     };
 
@@ -212,7 +218,7 @@ export default function Selector({ canvasRef, contextRef }) {
       const dy = mousePos.y - initialPos.y;
 
       shapeObj = moveShape(seletedShape, roughCanvas, context, dy, dx);
-      // createBoundingBox(context, seletedShape, dx, dy);
+      createBoundingBox(context, seletedShape, dx, dy);
       context.restore();
     };
 
@@ -221,6 +227,7 @@ export default function Selector({ canvasRef, contextRef }) {
       setInitialPos(null);
       setIsSelected(false);
       setIsBoxPresent(false);
+      setSelectedShape(shapeObj)
       if (shapeObj?.id) {
         updateShape(shapeObj);
       }

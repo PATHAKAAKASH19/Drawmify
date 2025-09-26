@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect } from "react";
+import React, {useState, useEffect } from "react";
 import useShapeStore from "../../stores/shapeStore";
 import getMousePos from "../../utils/getMousePos.utils";
 import usePanningStore from "../../stores/panningStore";
@@ -16,7 +16,7 @@ export default function Eraser({ canvasRef, contextRef }) {
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const roughCanvas = rough.canvas(canvas);

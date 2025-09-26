@@ -4,20 +4,56 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
 
       const generator = rough.generator()
 
+      let strokeStyle
+      switch (optionObj.currentItemStrokeStyle) {
+            case "solid":
+                  strokeStyle = []
+                  break;
+            case "dashed":
+                  strokeStyle = [20, 8];
+                  break;
+            case "dotted":
+                  strokeStyle = [4, 7];
+                  break;
+      }
       
+
+      let DrawingStyle = {}
+      switch (optionObj?.currentItemDrawingStyle) {
+        case "cartoonist":
+            DrawingStyle = {
+                  roughness: 6,
+                  bowing:2,
+           };
+          break;
+        case "artist":
+            DrawingStyle = {
+                  roughness:3,
+                  bowing: 1
+          };
+          break;
+        case "normal":
+            DrawingStyle = {
+                  roughness: 0,
+                  bowing: 0
+          };
+          break;
+      }
+      
+   
       let propertiesObj = {
         stroke: optionObj.currentItemStrokeColor,
-        strokeWidth: 2,
+        strokeWidth: optionObj.currentItemStrokeWidth,
         fill: optionObj.currentItemBackgroundColor,
-        //   fillStyle: "cross-hatch",
-        fillWeight: 1,
-        hachureAngle: 30,
-        hachureGap: 8,
-        roughness: 1,
-        bowing: 0,
-        preserveVertices: false
-        //   strokeLineDash: [10, 5],
-        //   simplification:0.9,
+        fillStyle: optionObj.currentItemFillStyle,
+        fillWeight: 3,
+        hachureAngle: 60,
+        hachureGap: 20,
+        roughness:DrawingStyle?.roughness,
+        bowing: DrawingStyle?.bowing,
+
+        strokeLineDash: strokeStyle,
+        simplification: 0.9,
       };
       
       let roughObj

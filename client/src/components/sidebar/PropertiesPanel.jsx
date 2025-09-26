@@ -1,5 +1,21 @@
 import React, { useEffect, useState } from 'react'
+import { MdOutlineHorizontalRule } from "react-icons/md";
 import usePropertyStore from '../../stores/propertyStore';
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import { CgBorderStyleDashed } from "react-icons/cg";
+import { GiBigWave } from "react-icons/gi";
+import { PiWaveSineBold } from "react-icons/pi";
+import { PiWaveSawtoothLight } from "react-icons/pi";
+import { LuArrowDownToLine } from "react-icons/lu";
+import { LuArrowUp } from "react-icons/lu";
+import { LuArrowUpToLine } from "react-icons/lu";
+import { FiArrowDown } from "react-icons/fi";
+import { CgViewGrid } from "react-icons/cg";
+import { RxTransparencyGrid } from "react-icons/rx";
+import { TbBackground } from "react-icons/tb";
+import { PiSelectionBackgroundThin } from "react-icons/pi";
+import { RiDeleteBinLine } from "react-icons/ri";
+
 
 export default function PropertiesPanel() {
   
@@ -55,12 +71,26 @@ export default function PropertiesPanel() {
       <div className="pb-5">
         <h2 className="text-[14px] capitalize pl-2">stroke width</h2>
         <div className="flex gap-3 pt-2 items-center pl-4">
-          <div className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border"></div>
-          <div className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border">
-            2
+          <div
+            title="Thin"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center "
+            onClick={() => changeProp("currentItemStrokeWidth", 1)}
+          >
+            <div className="w-3.5 h-[2px] bg-gray-500 rounded-2xl" />
           </div>
-          <div className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border">
-            3
+          <div
+            title="Bold"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemStrokeWidth", 2)}
+          >
+            <div className="w-3.5 h-[3px] bg-black rounded-2xl" />
+          </div>
+          <div
+            title="Extra Bold"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemStrokeWidth", 3)}
+          >
+            <div className="w-3.5 h-[6px] bg-black rounded-2xl" />
           </div>
         </div>
       </div>
@@ -68,9 +98,27 @@ export default function PropertiesPanel() {
       <div className="pb-5">
         <h2 className="text-[14px] capitalize pl-2">stroke style</h2>
         <div className="flex gap-3 pt-2 items-center pl-4">
-          <div className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border"></div>
-          <div className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border"></div>
-          <div className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border"></div>
+          <div
+            title="Solid"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemStrokeStyle", "solid")}
+          >
+            <MdOutlineHorizontalRule className="text-[20px] font-bold" />
+          </div>
+          <div
+            title="Dashed"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemStrokeStyle", "dashed")}
+          >
+            <CgBorderStyleDashed className="text-[20px] font-bold " />
+          </div>
+          <div
+            title="Dotted"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemStrokeStyle", "dotted")}
+          >
+            <HiOutlineDotsHorizontal className="text-[18px] font-bold" />
+          </div>
         </div>
       </div>
 
@@ -86,9 +134,11 @@ export default function PropertiesPanel() {
             onClick={() => changeProp("currentItemBackgroundColor", "#bde0fe")}
           ></div>
           <div
-            className="w-7 h-6 rounded-[0.2em] bg-[#f7b267] hover:cursor-pointer"
-            onClick={() => changeProp("currentItemBackgroundColor", "#f7b267")}
-          ></div>
+            className="w-7 h-6 rounded-[0.2em] bg-transparent hover:cursor-pointer flex justify-center items-center"
+            onClick={() => changeProp("currentItemBackgroundColor", "")}
+          >
+            <RxTransparencyGrid className="w-7 h-6" />
+          </div>
           <div
             className="w-7 h-6 rounded-[0.2em] bg-[#ffc8dd] hover:cursor-pointer"
             onClick={() => changeProp("currentItemBackgroundColor", "#ffc8dd")}
@@ -103,14 +153,109 @@ export default function PropertiesPanel() {
       <div className="pb-5">
         <h2 className="text-[14px] capitalize pl-2">background Style</h2>
         <div className="flex gap-3 pt-2 items-center pl-4">
-          <div className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border">
-          
+          <div
+            title="Solid"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemFillStyle", "solid")}
+          >
+            <div className="w-3 h-3 rounded-[0.2em] hover:cursor-pointer border bg-gray-700 "></div>
           </div>
-          <div className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border">
-            2
+          <div
+            title="Cross-Hatch"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemFillStyle", "cross-hatch")}
+          >
+            <CgViewGrid />
           </div>
-          <div className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border">
-            3
+          <div
+            title="Hachure"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemFillStyle", "Hachure")}
+          >
+            <TbBackground />
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-5">
+        <h2 className="text-[14px] capitalize pl-2">Drawing Style</h2>
+        <div className="flex gap-3 pt-2 items-center pl-4">
+          <div
+            title="Cartoonist"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+          >
+            <GiBigWave />
+          </div>
+          <div
+            title="Artist"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border  flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "artist")}
+          >
+            <PiWaveSineBold />
+          </div>
+          <div
+            title="Normal"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border  flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "normal")}
+          >
+            <PiWaveSawtoothLight />
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-5">
+        <h2 className="text-[14px] capitalize pl-2">Layers</h2>
+        <div className="flex gap-3 pt-2 items-center pl-4">
+          <div
+            title="Send To Back"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+          >
+            <LuArrowDownToLine />
+          </div>
+          <div
+            title="Send Backward"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border  flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "artist")}
+          >
+            <FiArrowDown />
+          </div>
+          <div
+            title="Bring Forward"
+            className="w-7 h-6 rounded-[0.2em]  hover:cursor-pointer border  flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "normal")}
+          >
+            <LuArrowUp />
+          </div>
+
+          <div
+            title="Bring To Front"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+          >
+            <LuArrowUpToLine />
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-5">
+        <h2 className="text-[14px] capitalize pl-2">Actions</h2>
+        <div className="flex gap-3 pt-2 items-center pl-4">
+          <div
+            title="Copy"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+          >
+            <PiSelectionBackgroundThin />
+          </div>
+
+          <div
+            title="Delete"
+            className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
+            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+          >
+            <RiDeleteBinLine />
           </div>
         </div>
       </div>

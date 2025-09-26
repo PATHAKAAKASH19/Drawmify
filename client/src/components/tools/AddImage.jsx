@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef , useLayoutEffect} from 'react'
+import React, { useEffect, useState, useRef} from 'react'
 import useShapeStore from '../../stores/shapeStore'
 import usePanningStore from '../../stores/panningStore'
 import useToolStore from '../../stores/toolStore'
@@ -57,7 +57,7 @@ useEffect(() => {
 
   
   
-  useLayoutEffect(() => {
+  useEffect(() => {
 
     const canvas = canvasRef.current;
     const context = contextRef.current;

@@ -5,13 +5,13 @@ import { devtools, persist } from "zustand/middleware"
 const propertyStore = (set) => ({
     properties: {
         currentItemStrokeColor: "green",
-        currentItemStrokeWidth: 4,
+        currentItemStrokeWidth: 1,
         currentItemStrokeStyle: "solid",
         currentItemOpacity: 100,
         currentItemBackgroundColor: "blue",
         currentItemEdges: "round",
         currentItemFillStyle: "hachure",
-        currentItemSlopiness: 2,
+        currentItemDrawingStyle: "normal",
         currentItemArrowType: "straight",
         currentItemFontFamily: 6,
         currentItemFontSize: 6,

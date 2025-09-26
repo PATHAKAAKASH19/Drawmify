@@ -114,7 +114,7 @@ export default function Text({ canvasRef, contextRef }) {
           context.font = shape.font;
           context.textBaseline = "hanging";
           context.fillStyle = shape.strokeColor;
-
+          context.fillText(shape.text, shape.x1, shape.y1);
         }
       });
 
