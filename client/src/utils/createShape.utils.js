@@ -46,12 +46,11 @@ const createShape = (x1, y1, x2, y2, shapeName, optionObj) => {
         strokeWidth: optionObj.currentItemStrokeWidth,
         fill: optionObj.currentItemBackgroundColor,
         fillStyle: optionObj.currentItemFillStyle,
-        fillWeight: 3,
+        fillWeight: 2,
         hachureAngle: 60,
-        hachureGap: 20,
+        hachureGap: 10,
         roughness:DrawingStyle?.roughness,
         bowing: DrawingStyle?.bowing,
-
         strokeLineDash: strokeStyle,
         simplification: 0.9,
       };
