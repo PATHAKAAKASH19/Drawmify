@@ -15,6 +15,7 @@ import { RxTransparencyGrid } from "react-icons/rx";
 import { TbBackground } from "react-icons/tb";
 import { PiSelectionBackgroundThin } from "react-icons/pi";
 import { RiDeleteBinLine } from "react-icons/ri";
+import useShapeStore from '../../stores/shapeStore';
 
 
 export default function PropertiesPanel() {
@@ -29,7 +30,10 @@ export default function PropertiesPanel() {
     Layers:"",
   });
     
-  const updateProperties = usePropertyStore(state =>  state.updateProperties)
+  const updateProperties = usePropertyStore(state => state.updateProperties)
+  const properties = usePropertyStore(state => state.properties)
+  const removeShape = useShapeStore(state => state.removeShape)
+  const createShapeCopy = useShapeStore(state => state.createShapeCopy)
 
   const changeProp = (propName, value) => {
 
@@ -245,7 +249,7 @@ export default function PropertiesPanel() {
           <div
             title="Copy"
             className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
-            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+            onClick={() => createShapeCopy(properties?.selectedItemId)}
           >
             <PiSelectionBackgroundThin />
           </div>
@@ -253,7 +257,7 @@ export default function PropertiesPanel() {
           <div
             title="Delete"
             className="w-7 h-6 rounded-[0.2em] hover:cursor-pointer border flex justify-center items-center"
-            onClick={() => changeProp("currentItemDrawingStyle", "cartoonist")}
+            onClick={() => removeShape(properties?.selectedItemId)}
           >
             <RiDeleteBinLine />
           </div>

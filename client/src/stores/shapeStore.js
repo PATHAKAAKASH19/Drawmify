@@ -71,7 +71,24 @@ const shapeStore = (set) => ({
       shapesData:[],
       nextState:[]
      })
-   }
+   },
+
+
+  createShapeCopy: (shapeId) => {
+    set((state) => {
+      const shape = state.shapesData.find(shape => shape.id === shapeId)
+      const newShape = { ...shape, x1: shape.x1 + 10, y1: shape.y1 + 10, x2: shape.x2 + 10, y2: shape.y2 + 10 }
+      const arr1 = state.shapesData.slice(0, state.shapesData.indexOf(shape) + 1)
+      const arr2 = state.shapesData.slice(state.shapesData.indexOf(shape) + 1);
+      console.log("arr", arr1 )
+        return {
+          prevState: [...state.prevState, state.shapesData],
+          shapesData: [...arr1, { id: uid(), ...newShape }, ...arr2],
+          nextState: [],
+        };
+
+    })
+  }
 
 
 })

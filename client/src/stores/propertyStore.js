@@ -16,7 +16,7 @@ const propertyStore = (set) => ({
         currentItemFontFamily: 6,
         currentItemFontSize: 6,
         currentItemTextAlign:"right",
-        
+        selectedItemId:null,
     },
 
     updateProperties: (propertyObj) => {

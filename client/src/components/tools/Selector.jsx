@@ -14,14 +14,16 @@ export default function Selector({ canvasRef, contextRef }) {
   const [isSelected, setIsSelected] = useState(false);
   const [seletedShape, setSelectedShape] = useState(null);
   const [isBoxPresent, setIsBoxPresent] = useState(false);
-
   const [initialPos, setInitialPos] = useState(null);
+  const [corner, setCorner] = useState("");
+
   const shapesData = useShapeStore((state) => state.shapesData);
   const offset = usePanningStore((state) => state.offset);
   const updateShape = useShapeStore((state) => state.updateShape);
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
   const properties = usePropertyStore((state) => state.properties);
+  const updateProperties = usePropertyStore(state => state.updateProperties)
 
   const moveShape = (seletedShape, roughCanvas, context, dy, dx) => {
     if (seletedShape.shapeName === "pencil") {
@@ -116,6 +118,77 @@ export default function Selector({ canvasRef, contextRef }) {
     }
   };
 
+   const checkHandleUnderCursor = (mousePos, seletedShape, size = 8) => {
+     console.log(seletedShape);
+     const { x1, x2, y1, y2 } = seletedShape;
+
+     const handles = {
+       "top-left": { x: x1, y: y1 },
+       "top-right": { x: x2, y: y1 },
+       "bottom-left": { x: x1, y: y2 },
+       "bottom-right": { x: x2, y: y2 },
+     };
+
+     for (const [handleName, { x, y }] of Object.entries(handles)) {
+       if (
+         mousePos.x >= x - size &&
+         mousePos.x <= x + size &&
+         mousePos.y >= y - size &&
+         mousePos.y <= y + size
+       ) {
+         return handleName;
+       }
+     }
+
+     return null;
+   };
+
+
+   const resizeShape = (seletedShape, roughCanvas, corner, dx, dy) => {
+    let { id, x1, y1, x2, y2, shapeName, propertiesObj } = seletedShape;
+
+     switch (corner) {
+       case "top-left":
+         x1 += dx;
+         y1 += dy;
+         break;
+       case "top-right":
+         x2 += dx;
+         y1 += dy;
+         break;
+       case "bottom-left":
+         x1 += dx;
+         y2 += dy;
+         break;
+       case "bottom-right":
+         x2 += dx;
+         y2 += dy;
+         break;
+     }
+
+
+ const element = createShape(
+   x1 ,
+   y1 ,
+   x2 ,
+   y2 ,
+   shapeName,
+   propertiesObj
+ );
+
+ if (element.shapeName === "arrow") {
+   const { arrowline, arrowhead1, arrowhead2 } = element.roughObj;
+   roughCanvas.draw(arrowline);
+   roughCanvas.draw(arrowhead1);
+   roughCanvas.draw(arrowhead2);
+ } else {
+   roughCanvas.draw(element.roughObj);
+ }
+
+ return { id, ...element };
+   };
+
+
   useEffect(() => {
 
     const context = contextRef.current
@@ -150,18 +223,34 @@ export default function Selector({ canvasRef, contextRef }) {
       e.preventDefault();
       const mousePos = getMousePos(canvas, e, offset, scale, scaleOffset);
       const element = checkShapeCollision(mousePos.x, mousePos.y, shapesData);
-     console.log(element)
+   
       if (element) {
         setSelectedShape(element);
         setIsSelected(true);
         e.target.style.cursor = "move";
         setInitialPos(mousePos);
-      } else {
-             setSelectedShape(null);
-             setIsSelected(false);
-             e.target.style.cursor = "default";
-             setInitialPos(null);
-      }
+
+          const corner = checkHandleUnderCursor(mousePos, element);
+
+          switch (corner) {
+            case "top-left":
+              e.target.style.cursor = "nwse-resize";
+              break;
+            case "top-right":
+              e.target.style.cursor = "nwse-resize";
+              break;
+            case "bottom-left":
+              e.target.style.cursor = "nwse-resize";
+              break;
+            case "bottom-right":
+              e.target.style.cursor = "nwse-resize";
+              break;
+          }
+
+            setCorner(corner);
+         
+        updateProperties({ selectedItemId: element.id })
+      } 
     };
 
     const draw = (e) => {
@@ -217,7 +306,13 @@ export default function Selector({ canvasRef, contextRef }) {
       const dx = mousePos.x - initialPos.x;
       const dy = mousePos.y - initialPos.y;
 
-      shapeObj = moveShape(seletedShape, roughCanvas, context, dy, dx);
+
+      if (corner) {
+        shapeObj = resizeShape(seletedShape, roughCanvas, corner, dx, dy);
+      } else {
+         shapeObj = moveShape(seletedShape, roughCanvas, context, dy, dx);
+      }
+     
       createBoundingBox(context, seletedShape, dx, dy);
       context.restore();
     };
@@ -228,6 +323,7 @@ export default function Selector({ canvasRef, contextRef }) {
       setIsSelected(false);
       setIsBoxPresent(false);
       setSelectedShape(shapeObj)
+      setCorner("")
       if (shapeObj?.id) {
         updateShape(shapeObj);
       }
@@ -262,7 +358,10 @@ export default function Selector({ canvasRef, contextRef }) {
     initialPos,
     scale,
     scaleOffset,
+    updateProperties,
+    corner
   ]);
+
 
   return null;
 }

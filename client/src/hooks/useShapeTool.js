@@ -1,4 +1,4 @@
-import { useState, useEffect , useLayoutEffect} from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import usePanningStore from "../stores/panningStore";
 import useScalingStore from "../stores/scalingStore";
 import useShapeStore from "../stores/shapeStore";
@@ -8,20 +8,18 @@ import createShape from "../utils/createShape.utils";
 import rough from "roughjs";
 import usePropertyStore from "../stores/propertyStore";
 
-
 export default function useShapeTool(canvasRef, contextRef, shapeName) {
-
-
   const [isDrawing, setIsDrawing] = useState(false);
   const [initialPos, setInitialPos] = useState(null);
+  
   const [points, setPoints] = useState(null);
   const shapesData = useShapeStore((state) => state.shapesData);
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
   const addShapes = useShapeStore((state) => state.addShapes);
   const offset = usePanningStore((state) => state.offset);
-  const properties = usePropertyStore( state =>  state.properties)
-    
+  const properties = usePropertyStore((state) => state.properties);
+
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
@@ -41,9 +39,6 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
 
       setIsDrawing(true);
     };
-
-
-
 
     const draw = (e) => {
       e.preventDefault();
@@ -71,32 +66,35 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
         }
 
         if (shape.shapeName === "pencil") {
-     
           createPencil(shape.points, context, shape.propertiesObj);
         }
 
-
         if (shape.shapeName === "image") {
-                const image = new Image();
-                image.src = shape.img;
-             context.drawImage(
-               image,
-               shape.x1,
-               shape.y1,
-               shape.x2 - shape.x1,
-               shape.y2 - shape.y1
-             );
+          const image = new Image();
+          image.src = shape.img;
+          context.drawImage(
+            image,
+            shape.x1,
+            shape.y1,
+            shape.x2 - shape.x1,
+            shape.y2 - shape.y1
+          );
         }
-        
-           if (shape.shapeName === "text" ) {
-             context.font = shape.font;
-             context.textBaseline = "hanging";
-             context.fillStyle = shape.strokeColor;
-             context.fillText(shape.text, shape.x1, shape.y1);
-           }
+
+        if (shape.shapeName === "text") {
+          context.font = shape.font;
+          context.textBaseline = "hanging";
+          context.fillStyle = shape.strokeColor;
+          context.fillText(shape.text, shape.x1, shape.y1);
+        }
       });
 
-      if (shapeName !== "pencil") {
+      if (shapeName === "pencil") {
+        const point = mousePos;
+        const newPoints = [...points, point];
+        setPoints(newPoints);
+        createPencil(newPoints, context, properties);
+      } else {
         shape = createShape(
           initialPos.x,
           initialPos.y,
@@ -109,35 +107,26 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
           roughCanvas.draw(shape.roughObj);
         } else {
           const { arrowline, arrowhead1, arrowhead2 } = shape.roughObj;
-
           roughCanvas.draw(arrowline);
           roughCanvas.draw(arrowhead1);
           roughCanvas.draw(arrowhead2);
         }
-      } else {
-        const point = mousePos
-        const newPoints = [...points, point];
-        setPoints(newPoints);
-        createPencil(newPoints, context, properties);
       }
 
       context.restore();
     };
 
-
-
-
     const finishDrawing = (e) => {
-        e.preventDefault();
-        
+      e.preventDefault();
 
-        if (shapeName !== "pencil"){
-            
-            addShapes(shape)
-          
-        } else {
-            addShapes({ shapeName: shapeName, points: points, propertiesObj: properties });
-        }
+      shapeName !== "pencil"
+        ? addShapes(shape)
+        : addShapes({
+            shapeName: shapeName,
+            points: points,
+            propertiesObj: properties,
+          });
+
       setIsDrawing(false);
       setInitialPos(null);
     };
@@ -171,7 +160,7 @@ export default function useShapeTool(canvasRef, contextRef, shapeName) {
     offset,
     shapeName,
     points,
-    properties
+    properties,
   ]);
 
   return null;
