@@ -23,7 +23,7 @@ export default function Selector({ canvasRef, contextRef }) {
   const scale = useScalingStore((state) => state.scale);
   const scaleOffset = useScalingStore((state) => state.scaleOffset);
   const properties = usePropertyStore((state) => state.properties);
-  const updateProperties = usePropertyStore(state => state.updateProperties)
+  const updateProperties = usePropertyStore((state) => state.updateProperties);
 
   const moveShape = (seletedShape, roughCanvas, context, dy, dx) => {
     if (seletedShape.shapeName === "pencil") {
@@ -91,7 +91,7 @@ export default function Selector({ canvasRef, contextRef }) {
         text: text,
         strokeColor: strokeColor,
         width: width + dx,
-        height: height + dy
+        height: height + dy,
       };
     } else {
       const { id, x1, y1, x2, y2, shapeName, propertiesObj } = seletedShape;
@@ -118,98 +118,151 @@ export default function Selector({ canvasRef, contextRef }) {
     }
   };
 
-   const checkHandleUnderCursor = (mousePos, seletedShape, size = 8) => {
-     console.log(seletedShape);
-     const { x1, x2, y1, y2 } = seletedShape;
+  const checkHandleUnderCursor = (mousePos, seletedShape, size = 4) => {
+    const { x1, x2, y1, y2 } = seletedShape;
 
-     const handles = {
-       "top-left": { x: x1, y: y1 },
-       "top-right": { x: x2, y: y1 },
-       "bottom-left": { x: x1, y: y2 },
-       "bottom-right": { x: x2, y: y2 },
-     };
+    const handles = {
+      "top-left": { x: x1, y: y1 },
+      "top-right": { x: x2, y: y1 },
+      "bottom-left": { x: x1, y: y2 },
+      "bottom-right": { x: x2, y: y2 },
+      top: { x: (x1 + x2) / 2, y: y1 },
+      bottom: { x: (x1 + x2) / 2, y: y2 },
+      left: { x: x1, y: (y1 + y2) / 2 },
+      right: { x: x2, y: (y1 + y2) / 2 },
+    };
 
-     for (const [handleName, { x, y }] of Object.entries(handles)) {
-       if (
-         mousePos.x >= x - size &&
-         mousePos.x <= x + size &&
-         mousePos.y >= y - size &&
-         mousePos.y <= y + size
-       ) {
-         return handleName;
-       }
-     }
+    for (const [handleName, { x, y }] of Object.entries(handles)) {
+      if (
+        mousePos.x >= x - size &&
+        mousePos.x <= x + size &&
+        mousePos.y >= y - size &&
+        mousePos.y <= y + size
+      ) {
+        return handleName;
+      }
+    }
 
-     return null;
-   };
+    return null;
+  };
 
-
-   const resizeShape = (seletedShape, roughCanvas, corner, dx, dy) => {
+  const resizeShape = (seletedShape, roughCanvas, context, corner, dx, dy) => {
     let { id, x1, y1, x2, y2, shapeName, propertiesObj } = seletedShape;
 
-     switch (corner) {
-       case "top-left":
-         x1 += dx;
-         y1 += dy;
-         break;
-       case "top-right":
-         x2 += dx;
-         y1 += dy;
-         break;
-       case "bottom-left":
-         x1 += dx;
-         y2 += dy;
-         break;
-       case "bottom-right":
-         x2 += dx;
-         y2 += dy;
-         break;
-     }
+    switch (corner) {
+      case "top-left":
+        x1 += dx;
+        y1 += dy;
+        break;
+      case "top-right":
+        x2 += dx;
+        y1 += dy;
+        break;
+      case "bottom-left":
+        x1 += dx;
+        y2 += dy;
+        break;
+      case "bottom-right":
+        x2 += dx;
+        y2 += dy;
+        break;
 
+      case "top":
+        y1 += dy;
+        break;
+      case "bottom":
+        y2 += dy;
+        break;
+      case "right":
+        x2 += dx;
+        break;
+      case "left":
+        x1 += dx;
+        break;
+    }
 
- const element = createShape(
-   x1 ,
-   y1 ,
-   x2 ,
-   y2 ,
-   shapeName,
-   propertiesObj
- );
+    if (shapeName === "image") {
+      const image = new Image();
+      image.src = seletedShape.img;
 
- if (element.shapeName === "arrow") {
-   const { arrowline, arrowhead1, arrowhead2 } = element.roughObj;
-   roughCanvas.draw(arrowline);
-   roughCanvas.draw(arrowhead1);
-   roughCanvas.draw(arrowhead2);
- } else {
-   roughCanvas.draw(element.roughObj);
- }
+      context.drawImage(image, x1, y1, x2 - x1, y2 - y1);
+      return {
+        id: id,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        img: seletedShape.img,
+        shapeName: shapeName,
+      };
+    } else if (shapeName === "text") {
+      const {
+        strokeColor,
+       
+        text,
+        font,
+        width,
+        height,
+      } = seletedShape;
+      context.font = font;
+      context.textBaseline = "hanging";
+      context.fillStyle = strokeColor;
+      context.fillText(text, x1, y1);
 
- return { id, ...element };
-   };
+      return {
+        id: id,
+        shapeName: shapeName,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        font: font,
+        text: text,
+        strokeColor: strokeColor,
+        width: width + dx,
+        height: height + dy,
+      };
+    } else {
+      const element = createShape(x1, y1, x2, y2, shapeName, propertiesObj);
 
+      if (element.shapeName === "arrow") {
+        const { arrowline, arrowhead1, arrowhead2 } = element.roughObj;
+        roughCanvas.draw(arrowline);
+        roughCanvas.draw(arrowhead1);
+        roughCanvas.draw(arrowhead2);
+      } else {
+        roughCanvas.draw(element.roughObj);
+      }
+
+      return { id, ...element };
+    }
+  };
 
   useEffect(() => {
-
-    const context = contextRef.current
+    const context = contextRef.current;
 
     if (seletedShape) {
-      console.log("aaa")
-      console.log(seletedShape)
-              context.save();
-              context.translate(
-                offset?.x * scale - scaleOffset.x,
-                offset?.y * scale - scaleOffset.y
-              );
-              context.scale(scale, scale);
+      context.save();
+      context.translate(
+        offset?.x * scale - scaleOffset.x,
+        offset?.y * scale - scaleOffset.y
+      );
+      context.scale(scale, scale);
 
-              const dx = 0
-              const dy = 0
-              createBoundingBox(context, seletedShape, dx, dy);
-              context.restore();
-              
-       }
-  }, [seletedShape,scaleOffset, scale, isBoxPresent, contextRef,offset])
+      const dx = 0;
+      const dy = 0;
+      createBoundingBox(context, seletedShape, corner, dx, dy);
+      context.restore();
+    }
+  }, [
+    seletedShape,
+    scaleOffset,
+    scale,
+    isBoxPresent,
+    contextRef,
+    offset,
+    corner,
+  ]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -223,34 +276,46 @@ export default function Selector({ canvasRef, contextRef }) {
       e.preventDefault();
       const mousePos = getMousePos(canvas, e, offset, scale, scaleOffset);
       const element = checkShapeCollision(mousePos.x, mousePos.y, shapesData);
-   
+
       if (element) {
         setSelectedShape(element);
         setIsSelected(true);
         e.target.style.cursor = "move";
         setInitialPos(mousePos);
 
-          const corner = checkHandleUnderCursor(mousePos, element);
+        const corner = checkHandleUnderCursor(mousePos, element);
 
-          switch (corner) {
-            case "top-left":
-              e.target.style.cursor = "nwse-resize";
-              break;
-            case "top-right":
-              e.target.style.cursor = "nwse-resize";
-              break;
-            case "bottom-left":
-              e.target.style.cursor = "nwse-resize";
-              break;
-            case "bottom-right":
-              e.target.style.cursor = "nwse-resize";
-              break;
-          }
+        switch (corner) {
+          case "top-left":
+            e.target.style.cursor = "nwse-resize";
+            break;
+          case "top-right":
+            e.target.style.cursor = "nesw-resize";
+            break;
+          case "bottom-left":
+            e.target.style.cursor = "nesw-resize";
+            break;
+          case "bottom-right":
+            e.target.style.cursor = "nwse-resize";
+            break;
+          case "top":
+            e.target.style.cursor = "n-resize";
+            break;
+          case "bottom":
+            e.target.style.cursor = "s-resize";
+            break;
+          case "right":
+            e.target.style.cursor = "e-resize";
+            break;
+          case "left":
+            e.target.style.cursor = "w-resize";
+            break;
+        }
 
-            setCorner(corner);
-         
-        updateProperties({ selectedItemId: element.id })
-      } 
+        setCorner(corner);
+
+        updateProperties({ selectedItemId: element.id });
+      }
     };
 
     const draw = (e) => {
@@ -306,14 +371,20 @@ export default function Selector({ canvasRef, contextRef }) {
       const dx = mousePos.x - initialPos.x;
       const dy = mousePos.y - initialPos.y;
 
-
       if (corner) {
-        shapeObj = resizeShape(seletedShape, roughCanvas, corner, dx, dy);
+        shapeObj = resizeShape(
+          seletedShape,
+          roughCanvas,
+          context,
+          corner,
+          dx,
+          dy
+        );
       } else {
-         shapeObj = moveShape(seletedShape, roughCanvas, context, dy, dx);
+        shapeObj = moveShape(seletedShape, roughCanvas, context, dy, dx);
       }
-     
-      createBoundingBox(context, seletedShape, dx, dy);
+
+      createBoundingBox(context, seletedShape, corner, dx, dy);
       context.restore();
     };
 
@@ -322,8 +393,8 @@ export default function Selector({ canvasRef, contextRef }) {
       setInitialPos(null);
       setIsSelected(false);
       setIsBoxPresent(false);
-      setSelectedShape(shapeObj)
-      setCorner("")
+      setSelectedShape(shapeObj);
+      setCorner("");
       if (shapeObj?.id) {
         updateShape(shapeObj);
       }
@@ -359,9 +430,8 @@ export default function Selector({ canvasRef, contextRef }) {
     scale,
     scaleOffset,
     updateProperties,
-    corner
+    corner,
   ]);
-
 
   return null;
 }
